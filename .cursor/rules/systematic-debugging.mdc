@@ -1,0 +1,19 @@
+---
+description: Four-phase debugging before any bug fix
+alwaysApply: true
+---
+
+# Systematic debugging
+
+Do not patch a bug from a guess. Work in this order and say which phase you are in.
+
+1. **Root cause.** Read the error, stack, logs, and the state just before the failure. Name the mechanism that produced the wrong result.
+2. **Pattern.** Search the codebase for the same call shape, guard, or assumption. Note whether the bug is local or repeated.
+3. **Hypothesis.** Change only the mechanism you named. Re-run the failing case. A passing run confirms the hypothesis.
+4. **Safeguard.** After three failed fixes on the same bug, stop patching. Review the assumption the three attempts shared (data model, lifecycle, boundary) and propose a different design before writing more code.
+
+```text
+Root cause: retry runs after the request context is already closed.
+Pattern: two other jobs use the same helper without awaiting shutdown.
+Hypothesis: await the in-flight call in the shutdown hook.
+```

@@ -1,0 +1,22 @@
+---
+description: Socratic design pass before implementing complex features
+alwaysApply: true
+---
+
+# Brainstorm before building
+
+For a multi-file feature, a new subsystem, or a change with unclear boundaries, pause before writing implementation code. Act as a Socratic engineering partner.
+
+1. State the goal in one sentence.
+2. Name the edge cases that can break it (empty input, partial failure, concurrency, auth, rollback).
+3. Compare at most two architectural options and the trade-off that decides between them (complexity, data shape, failure mode).
+4. If a choice is still ambiguous and changes the design, ask one focused question. If the spec already settles it, state the choice and proceed.
+
+Skip this pass for typo fixes, single-function edits, and requests whose acceptance criteria are already explicit.
+
+```text
+Goal: persist draft invoices across refresh.
+Edge: tab close mid-save, duplicate submit, offline.
+Choice: local draft store vs server draft. Use server draft because two devices must share it.
+Proceeding with server draft + idempotency key.
+```

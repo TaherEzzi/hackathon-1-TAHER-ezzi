@@ -1,0 +1,22 @@
+---
+description: Red-Green-Refactor cycle for new features and critical bug fixes
+alwaysApply: true
+---
+
+# Test-driven development
+
+For a new behavior or a critical bug fix, follow Red → Green → Refactor. Do not start with production code.
+
+1. **Red.** Add or update a test that fails for the missing behavior. Run it and confirm the failure is the one you expect.
+2. **Green.** Write the smallest production change that makes that test pass. Run the test again.
+3. **Refactor.** Remove duplication and tighten types only after green. Re-run the test.
+
+Keep tests next to the existing test layout in this repo. Prefer the project's runner over inventing a new one.
+
+Skip the cycle for copy, comments, formatting, and config that has no behavioral assertion.
+
+```text
+Red:   test "rejects duplicate email" fails with "expected 409, got 201"
+Green: handler checks unique constraint and returns 409
+Refactor: extract EmailAlreadyUsed error; test still passes
+```

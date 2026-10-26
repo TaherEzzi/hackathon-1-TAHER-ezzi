@@ -1,0 +1,57 @@
+# ── secrets — never commit ──
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ── dependencies ──
+node_modules/
+.pnp
+.pnp.js
+
+# ── build output ──
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# ── vercel ──
+.vercel
+
+# ── supabase local artifacts (token, temp dirs, volumes) ──
+supabase/.temp
+supabase/.branches
+supabase/.branches/*
+supabase/.env
+
+# ── testing ──
+coverage/
+playwright-report/
+test-results/
+.nyc_output/
+
+# ── reference clones: re-cloneable (see research/Reverse-Engineering-Notes.md) ──
+# Shallow clones of third-party repos with their own .git dirs — never ship them.
+research/repos/
+
+# ── editor / OS ──
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ── logs ──
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── misc ──
+*.tsbuildinfo
+.eslintcache

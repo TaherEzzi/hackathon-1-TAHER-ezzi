@@ -1,0 +1,30 @@
+---
+description: Internal review for types, errors, modules, and cost before finishing
+alwaysApply: true
+---
+
+# Review before finishing
+
+Before you report a code change as done, review the diff yourself against these four checks. Fix what fails the check in the same turn.
+
+- **Types.** No new `any`, unchecked casts, or silent widening. Public functions state their inputs and errors in the type system.
+- **Errors.** Fallible boundaries use `try/catch` (or the language equivalent). Catch blocks log context and rethrow or return a typed error. Empty catches are not allowed.
+- **Modules.** One reason to change per file. Do not grow a function so it fetches, transforms, and renders in the same block; split along that seam.
+- **Cost.** Flag work that loops over unbounded input, awaits inside a hot loop, or loads a whole collection to read one field. Prefer a bounded query or a single pass.
+
+```typescript
+// Empty catch hides the failure
+try {
+  await save(row);
+} catch {
+  return null;
+}
+
+// Boundary keeps the cause
+try {
+  await save(row);
+} catch (error) {
+  logger.error("save failed", { id: row.id, error });
+  throw new SaveError("Unable to save", { cause: error });
+}
+```
