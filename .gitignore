@@ -4,6 +4,7 @@
 !.env.example
 *.pem
 *.key
+.cursor/mcp.json
 
 # ── dependencies ──
 node_modules/

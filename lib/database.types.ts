@@ -377,34 +377,43 @@ export type Database = {
       }
       transfer_plans: {
         Row: {
+          account_age_30d: boolean
           amount: number
-          checks: Json
+          both_balances: boolean
           created_at: string
           from_program_id: string
           id: string
           itinerary_id: string | null
+          name_match: boolean
+          seat_exists: boolean
           status: string
           to_program_id: string
           user_id: string
         }
         Insert: {
+          account_age_30d?: boolean
           amount: number
-          checks?: Json
+          both_balances?: boolean
           created_at?: string
           from_program_id: string
           id?: string
           itinerary_id?: string | null
+          name_match?: boolean
+          seat_exists?: boolean
           status?: string
           to_program_id: string
           user_id: string
         }
         Update: {
+          account_age_30d?: boolean
           amount?: number
-          checks?: Json
+          both_balances?: boolean
           created_at?: string
           from_program_id?: string
           id?: string
           itinerary_id?: string | null
+          name_match?: boolean
+          seat_exists?: boolean
           status?: string
           to_program_id?: string
           user_id?: string

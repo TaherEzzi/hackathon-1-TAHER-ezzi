@@ -4,9 +4,14 @@
  * Makes one offer request (MAD -> CDG, ~3 months out, one adult, economy)
  * and prints a sanitized summary of the first offers.
  */
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 
-const env = readFileSync(new URL("../.env", import.meta.url), "utf8");
+const envPath = new URL("../.env", import.meta.url);
+if (!existsSync(envPath)) {
+  console.error("SMOKE FAIL: ../.env not found — copy your key into duffel_api_key= (never commit it)");
+  process.exit(1);
+}
+const env = readFileSync(envPath, "utf8");
 const token = env
   .split("\n")
   .find((l) => l.startsWith("duffel_api_key="))
@@ -18,25 +23,38 @@ if (!token?.startsWith("duffel_test_")) {
   process.exit(1);
 }
 
+// Probe date: fixed ~3 months out, but always in the future, else Duffel refuses with no clear error.
+const departure_date = "2027-01-26";
+if (new Date(`${departure_date}T00:00:00Z`) <= new Date()) {
+  console.error(`SMOKE FAIL: probe date ${departure_date} is not in the future — bump it (hardening pass)`);
+  process.exit(1);
+}
+
 const body = {
   data: {
     cabin_class: "economy",
     passengers: [{ type: "adult" }],
-    slices: [{ origin: "MAD", destination: "CDG", departure_date: "2027-01-26" }],
+    slices: [{ origin: "MAD", destination: "CDG", departure_date }],
     return_offers: true,
   },
 };
 
-const res = await fetch("https://api.duffel.com/air/offer_requests?return_offers=true", {
-  method: "POST",
-  headers: {
-    Authorization: `Bearer ${token}`,
-    "Duffel-Version": "v2",
-    "Content-Type": "application/json",
-    "Accept-Encoding": "gzip",
-  },
-  body: JSON.stringify(body),
-});
+let res;
+try {
+  res = await fetch("https://api.duffel.com/air/offer_requests?return_offers=true", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Duffel-Version": "v2",
+      "Content-Type": "application/json",
+      "Accept-Encoding": "gzip",
+    },
+    body: JSON.stringify(body),
+  });
+} catch (err) {
+  console.error("SMOKE FAIL: network error reaching Duffel:", err?.cause?.code ?? err?.message ?? err);
+  process.exit(1);
+}
 
 const payload = await res.json();
 
