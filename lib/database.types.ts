@@ -43,6 +43,7 @@ export type Database = {
         Row: {
           affiliate_disclosure: string | null
           attribution_required: string
+          cache_max_age_hours: number
           daily_request_cap: number | null
           id: number
           max_horizon_days: number | null
@@ -56,6 +57,7 @@ export type Database = {
         Insert: {
           affiliate_disclosure?: string | null
           attribution_required?: string
+          cache_max_age_hours?: number
           daily_request_cap?: number | null
           id?: number
           max_horizon_days?: number | null
@@ -69,6 +71,7 @@ export type Database = {
         Update: {
           affiliate_disclosure?: string | null
           attribution_required?: string
+          cache_max_age_hours?: number
           daily_request_cap?: number | null
           id?: number
           max_horizon_days?: number | null
@@ -276,6 +279,27 @@ export type Database = {
           is_active?: boolean
           kind?: string
           name?: string
+        }
+        Relationships: []
+      }
+      provider_cache: {
+        Row: {
+          cache_key: string
+          fetched_at: string
+          payload: Json
+          ttl_hours: number
+        }
+        Insert: {
+          cache_key: string
+          fetched_at?: string
+          payload: Json
+          ttl_hours?: number
+        }
+        Update: {
+          cache_key?: string
+          fetched_at?: string
+          payload?: Json
+          ttl_hours?: number
         }
         Relationships: []
       }
