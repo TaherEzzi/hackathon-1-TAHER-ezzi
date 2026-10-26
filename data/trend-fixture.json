@@ -1,0 +1,21 @@
+{
+  "label": "estimación",
+  "source": "labelled seasonal-curve fixture (D27) — never 'en vivo'; a historic-fare provider does not exist in this stack",
+  "verified_at": "2026-10-26",
+  "note": "Multiplicadores mensuales sobre la tarifa base del mes de referencia (1.00 = neutro). Curva demo del caso MAD→JNB; Eriz confirma la curva al cerrar D27.",
+  "reference_month_factor": 1.0,
+  "monthly_factor": {
+    "1": 1.0,
+    "2": 0.98,
+    "3": 0.95,
+    "4": 0.93,
+    "5": 1.0,
+    "6": 1.08,
+    "7": 1.15,
+    "8": 1.18,
+    "9": 1.02,
+    "10": 0.96,
+    "11": 0.95,
+    "12": 1.12
+  }
+}
