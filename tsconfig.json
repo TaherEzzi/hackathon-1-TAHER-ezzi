@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2023",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": false,
@@ -16,20 +20,34 @@
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
     "jsx": "preserve",
-    "types": ["node"],
-    "plugins": [{ "name": "next" }],
+    "types": [
+      "node"
+    ],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     }
   },
   "include": [
-    "lib/**/*.ts",
-    "lib/engine/*.mjs",
     "app/**/*.ts",
     "app/**/*.tsx",
-    "scripts/**/*.mjs",
     "data/**/*.json",
-    "supabase/migrations/*.sql"
+    "lib/**/*.ts",
+    "lib/engine/*.mjs",
+    "scripts/**/*.mjs",
+    "supabase/migrations/*.sql",
+    ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "research", "brand-studio", "stitch", ".next"]
+  "exclude": [
+    "node_modules",
+    "research",
+    "stitch",
+    ".next"
+  ]
 }

@@ -5,7 +5,7 @@
   "description": "Backend — A Una Milla v1: chat-driven points/awards engine (see docs/BACKEND_BUILD_BRIEF.md).",
   "type": "module",
   "scripts": {
-    "test": "node --import tsx --test lib/engine/*.test.mjs lib/server/*.test.ts",
+    "test": "node --import tsx --test lib/engine/*.test.mjs lib/server/*.test.ts web/theme.test.mjs",
     "test:engine": "node --test lib/engine/*.test.mjs",
     "dev": "next dev",
     "build": "next build",

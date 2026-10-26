@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
 export const metadata = {
-  title: "A Una Milla — backend",
-  description: "Chat de puntos y millas para España. Backend v1 (docs/BACKEND_BUILD_BRIEF.md).",
+  title: "A Una Milla — The House",
+  description: "Aeronautical arbitrage for the discerning traveler. The House, Trip Dossier, Capital & Spend, Sovereign Roadmap.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
