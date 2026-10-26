@@ -294,46 +294,74 @@ export interface FetchedCash extends CashFare {
   error?: { provider: string; detail: string };
 }
 
-/** ONE ranged cash query (MUST #14): per-date cheapest sane fare across the window. */
+/**
+ * Window cash (Duffel v2 limitation note, verified live 2026-10-26): offer
+ * requests accept ONLY a scalar departure date (the ranged form 422s), so the
+ * window is served as ≤7 per-date scalar queries — each through cache+dedupe
+ * (MUST #14 per exact date), with one usage row per FRESH roundtrip. Partial
+ * cache/provider failures surface per date; a fully-failed window keeps the
+ * typed provider error (never silent).
+ */
 export async function cashWindow(
   ctx: EngineContext,
   { origin, destination, from, to, cabin, pax }: { origin: string; destination: string; from: string; to: string; cabin: string; pax: number },
 ): Promise<Record<string, CashFare>> {
-  const res = await getOffersCached({
-    params: { origin, destination, departure_date: { from, to }, cabin: cabin as "economy" | "premium" | "business" | "first", pax },
-    store: ctx.cache,
-    maxAgeHours: ctx.maxAgeHours,
-  });
-  if (!res.source_error) {
-    await ctx.usage("duffel").catch(() => undefined); // fresh roundtrip counts
-  }
+  const dates = windowDates(from, to, 7);
+  const entries = await Promise.all(
+    dates.map(async (date) => {
+      const res = await getOffersCached({
+        params: { origin, destination, departure_date: date, cabin: cabin as "economy" | "premium" | "business" | "first", pax },
+        store: ctx.cache,
+        maxAgeHours: ctx.maxAgeHours,
+      });
+      if (!res.source_error) {
+        await ctx.usage("duffel").catch(() => undefined); // fresh roundtrip counts
+      }
+      const chosen = cheapestSaneOffer(res.payload?.offers ?? [], "EUR") ?? cheapestSaneOffer(res.payload?.offers ?? []);
+      if (!chosen) return { date, err: res.source_error ?? null, fare: null };
+      return {
+        date,
+        err: res.source_error ?? null,
+        fare: {
+          amount: chosen.total.amount,
+          currency: chosen.total.currency,
+          badge: res.badge,
+          stale: res.stale,
+          age_hours: res.age_hours,
+          fetched_at: res.fetched_at,
+          cached: res.cached,
+          offer_id: chosen.id,
+        } as CashFare,
+      };
+    }),
+  );
   const result: Record<string, CashFare> = {};
-  // offers may be partial under cache-failure; a complete miss keeps the typed error
-  if (res.payload?.offers?.length === 0 && res.source_error) {
-    throw Object.assign(new Error(res.source_error.detail), { code: "provider_error", provider: res.source_error.provider });
+  let typedProviderError: Error | null = null;
+  for (const e of entries) {
+    if (e.fare) result[e.date] = e.fare;
+    else if (e.err && !typedProviderError) {
+      typedProviderError = Object.assign(new Error(e.err.detail), { code: "provider_error", provider: e.err.provider });
+    }
   }
-  const byId = new Map(res.payload.offers.map((o) => [o.id, o]));
-  const index: Map<string, DuffelOffer> = new Map();
-  for (const o of res.payload.offers) {
-    const dep = o.slices?.[0]?.departure_date;
-    if (!dep) continue;
-    const prev = index.get(dep);
-    if (!prev || o.total.amount < prev.total.amount) index.set(dep, o);
-  }
-  for (const [date, offer] of index) {
-    result[date] = {
-      amount: offer.total.amount,
-      currency: offer.total.currency,
-      badge: res.badge,
-      stale: res.stale,
-      age_hours: res.age_hours,
-      fetched_at: res.fetched_at,
-      cached: res.cached,
-      offer_id: offer.id,
-    };
-  }
-  // *** [rest of the function intentionally identical shape] ***
+  // a complete miss keeps the typed error (cache-failure partial stays usable)
+  if (Object.keys(result).length === 0 && typedProviderError) throw typedProviderError;
   return result;
+}
+
+/** ≤7 spread dates across [start, end] inclusive — the window planner. */
+export function windowDates(start: string, end: string, max: number): string[] {
+  const s = new Date(`${start}T00:00:00Z`).getTime();
+  const e = new Date(`${end}T00:00:00Z`).getTime();
+  if (!Number.isFinite(s) || !Number.isFinite(e) || e < s) return [];
+  const span = Math.round((e - s) / 86_400_000);
+  if (span <= max - 1) {
+    return Array.from({ length: span + 1 }, (_, i) => new Date(s + i * 86_400_000).toISOString().slice(0, 10));
+  }
+  const out: string[] = [];
+  for (let i = 0; i < max; i++) {
+    out.push(new Date(s + Math.round((i * span) / (max - 1)) * 86_400_000).toISOString().slice(0, 10));
+  }
+  return [...new Set(out)].sort();
 }
 
 /** Book-now single-date cash: cheapest sane offer + re-verify on the CHOSEN offer (F8). */

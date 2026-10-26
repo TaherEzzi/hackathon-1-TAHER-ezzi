@@ -5,6 +5,7 @@
  * feeds is consequently badged `estimación` with its source shown.
  */
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { InsufficientData } from "../engine/verdict.mjs";
 
 export interface TrendFixture {
@@ -15,10 +16,12 @@ export interface TrendFixture {
   monthly_factor: Record<string, number>;
 }
 
-export function loadTrendFixture(path = new URL("../../data/trend-fixture.json", import.meta.url)): TrendFixture {
+/** Resolved from process.cwd() — `new URL(…, import.meta.url)` breaks under Next's bundled server. */
+export function loadTrendFixture(path?: string | URL): TrendFixture {
+  const file = path ?? join(process.cwd(), "data", "trend-fixture.json");
   let raw: unknown;
   try {
-    raw = JSON.parse(readFileSync(path as any, "utf8"));
+    raw = JSON.parse(readFileSync(file, "utf8"));
   } catch (err) {
     throw new InsufficientData(`trend fixture: unreadable — ${err instanceof Error ? err.message : String(err)}`);
   }

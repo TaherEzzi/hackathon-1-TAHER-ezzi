@@ -29,12 +29,15 @@ class FakeUsageDB {
         (current as Record<string, string>)[col] = value;
         return api;
       },
-      maybeSingle: async () => ({
-        data: (current.user_id && current.day && current.provider)
-          ? (this.rows.has(dbKey(current)) ? { calls: this.rows.get(dbKey(current)) } : null)
-          : null,
-        error: null,
-      }),
+      maybeSingle: async () => {
+        const { user_id, day, provider } = current;
+        if (!(user_id && day && provider)) return { data: null, error: null };
+        const key = dbKey({ user_id, day, provider });
+        return {
+          data: this.rows.has(key) ? { calls: this.rows.get(key) } : null,
+          error: null,
+        };
+      },
       upsert: async (row: { user_id: string; day: string; provider: string; calls: number }) => {
         this.rows.set(dbKey(row), row.calls);
         return { error: null };

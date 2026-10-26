@@ -8,6 +8,7 @@
  * D19 card-gate analogue on the award side: the engine simply has no data.
  */
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { priceBadge, InsufficientData } from "../engine/verdict.mjs";
 
 const PROGRAM_CODES = new Set(["BA", "IB", "VY", "EI", "AY", "QR", "REVOLUT", "AMEX_ES"]);
@@ -79,11 +80,14 @@ export function validateAwardFixture(raw: unknown): AwardFixture {
 
 /**
  * Load + validate data/award-fixture.json. Optional path override for tests.
+ * Resolved from process.cwd() — a `new URL(…, import.meta.url)` default breaks
+ * under Next's bundled server (patched URL realm), so an explicit FS path it is.
  */
-export function loadAwardFixture(path = new URL("../../data/award-fixture.json", import.meta.url)): AwardFixture {
+export function loadAwardFixture(path?: string | URL): AwardFixture {
+  const file = path ?? join(process.cwd(), "data", "award-fixture.json");
   let parsed: unknown;
   try {
-    parsed = JSON.parse(readFileSync(path as any, "utf8"));
+    parsed = JSON.parse(readFileSync(file, "utf8"));
   } catch (err) {
     throw new InsufficientData(`fixture: unreadable file — ${err instanceof Error ? err.message : String(err)}`);
   }

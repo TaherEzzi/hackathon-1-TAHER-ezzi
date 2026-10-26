@@ -8,6 +8,7 @@ import { z } from "zod";
 import { requireUser, typedError } from "../../../../lib/server/supabase";
 import { engineForUser } from "../../../../lib/server/factory";
 import { getOffersCached, cheapestSaneOffer } from "../../../../lib/server/duffel";
+import { windowDates } from "../../../../lib/server/engine";
 
 export const runtime = "nodejs";
 
@@ -28,11 +29,33 @@ export async function POST(req: Request): Promise<Response> {
     const { origin, destination, depart_date, window, cabin, pax } = parsed.data;
     if (!depart_date && !window) return typedError(400, "bad_request", "depart_date o window requerido");
     const { ctx } = await engineForUser(req);
+    if (window && !depart_date) {
+      // Duffel v2 offer requests accept only scalar departure dates (verified
+      // live 2026-10-26): a window fans out to ≤7 per-date cached+deduped
+      // scalar queries, one entry per date in the response.
+      const dates = windowDates(window.from, window.to, 7);
+      const byDate = await Promise.all(
+        dates.map(async (departure_date) => {
+          const res = await getOffersCached({ params: { origin, destination, departure_date, cabin, pax }, store: ctx.cache, maxAgeHours: ctx.maxAgeHours });
+          if (!res.source_error) await ctx.usage("duffel").catch(() => undefined);
+          return {
+            depart_date: departure_date,
+            badge: res.badge,
+            stale: res.stale,
+            age_hours: res.age_hours,
+            fetched_at: res.fetched_at,
+            source_error: res.source_error ?? null,
+            cheapest: cheapestSaneOffer(res.payload.offers, "EUR") ?? cheapestSaneOffer(res.payload.offers),
+          };
+        }),
+      );
+      return Response.json({ mode: "window", window, by_date: byDate });
+    }
     const res = await getOffersCached({
       params: {
         origin,
         destination,
-        departure_date: depart_date ?? window!,
+        departure_date: depart_date!,
         cabin,
         pax,
       },

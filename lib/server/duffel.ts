@@ -46,7 +46,7 @@ export interface OfferRequestParams {
   origin: string;
   destination: string;
   /** single ISO date, or a {from,to} window for the ONE ranged cash query (F12 step 2) */
-  departure_date: string | { from: string; to: string };
+  departure_date: string;
   cabin: "economy" | "premium" | "business" | "first";
   pax: number; // 1..9, engine-enforced upstream
   currency?: string;
@@ -132,6 +132,11 @@ export interface OfferRequestResult {
 }
 
 export async function requestOffers(params: OfferRequestParams): Promise<OfferRequestResult> {
+  // Duffel v2 accepts ONLY a scalar "YYYY-MM-DD" here — verified live against
+  // api.duffel.com (422 for both the {from,to} object and the "from..to"
+  // partial-date range string, with and without the documented headers).
+  // Windowed searches are therefore fanned out to ≤7 per-date requests in
+  // cashWindow — one cached+deduped call per exact date.
   const body = {
     data: {
       cabin_class: params.cabin,
@@ -248,14 +253,12 @@ export interface CachedOffersOptions {
 export type OfferRequestBadged = BadgedResult<OfferRequestResult>;
 
 /**
- * The one ranged cash query for a request (F12 step 2, MUST #14): the cache key
- * keeps the §5.2 shape, with a `from..to` window in the date slot when the
- * request is ranged. In-flight duplicates share one promise.
+ * Cached scalar-date offers request (F12 step 2, MUST #14): the cache key keeps
+ * the §5.2 shape with the exact departure date in its date slot, so identical
+ * dates dedupe in-flight and a fresh row serves later calls within TTL.
  */
 export function getOffersCached({ params, store, maxAgeHours, ttlHours = 24, now }: CachedOffersOptions): Promise<OfferRequestBadged> {
-  const dateKey = typeof params.departure_date === "string"
-    ? params.departure_date
-    : `${params.departure_date.from}..${params.departure_date.to}`;
+  const dateKey = params.departure_date;
   const key = buildCacheKey({
     provider: PROVIDER,
     origin: params.origin,
