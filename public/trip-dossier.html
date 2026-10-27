@@ -8,7 +8,6 @@
 <div class="flex flex-col max-w-2xl">
 <span class="font-label-md text-label-md uppercase tracking-[0.2em] text-secondary font-medium">Trip planner</span>
 <h1 class="font-headline-lg text-headline-lg-mobile sm:text-headline-lg text-primary tracking-tight">Your plan, in three screens.</h1>
-<p class="font-body-lg text-body-lg text-on-surface-variant mt-space-xs">Tell us what you have and spend, where you want to go, and when — then we calculate everything.</p>
 <div class="flex flex-wrap gap-space-sm mt-space-md">
 <button type="button" id="open-trips" class="h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-primary hover:border-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">luggage</span><span>My trips</span></button>
 <a href="chat.html" class="h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-primary hover:border-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">forum</span><span>Plan by chat instead</span></a>
@@ -55,7 +54,6 @@
 <!-- Cards -->
 <div class="flex flex-col gap-space-sm">
 <label class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant">Cards you use</label>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Select every card you actually hold. Each purchase is assigned only to one of those cards.</p>
 <div class="flex flex-wrap gap-space-sm" id="card-options">
 <button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="amex_gold" data-code="AMEX_ES">Amex Gold</button>
 <button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="amex_green" data-code="AMEX_ES">Amex Green</button>
@@ -92,73 +90,72 @@
 <div class="spend-line flex items-center justify-between gap-3 border-y border-line py-space-sm">
 <span class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant">What you spend every month</span>
 <div class="flex items-center gap-2">
-<div class="money-stepper flex items-stretch border border-line h-[56px] w-[220px]" data-step="50">
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease monthly spend">−</button>
-<input id="spend-total-input" class="mstep-val h-full flex-1 min-w-0 text-center font-figure-lg text-figure-lg text-primary bg-transparent focus:outline-none focus:bg-primary/5" type="number" inputmode="numeric" min="0" step="50" value="3500" aria-label="Monthly spend total"/>
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase monthly spend">+</button>
+<div class="money-stepper flex items-stretch border border-line h-[40px] w-[180px]" data-step="50">
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease monthly spend">−</button>
+<input id="spend-total-input" class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5" type="number" inputmode="numeric" min="0" step="50" value="3500" aria-label="Monthly spend total"/>
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase monthly spend">+</button>
 </div>
 <span class="font-label-md text-label-md uppercase tracking-wider text-quiet whitespace-nowrap">€ / month</span>
 </div>
 </div>
 <div class="flex items-baseline justify-between border-b border-line pb-space-xs">
 <p class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant">Where does it go each month?</p>
-<p class="font-label-sm text-label-sm uppercase tracking-widest text-quiet">Tap or hold − / + — or type the amount</p>
 </div>
 
 <div class="spend-line flex items-center justify-between gap-3 border-b border-line py-space-sm">
 <span class="font-body-sm text-body-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">local_gas_station</span>Fuel</span>
-<div class="money-stepper flex items-stretch border border-line h-[52px] w-[188px]" data-step="10">
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Fuel amount">−</button>
+<div class="money-stepper flex items-stretch border border-line h-[40px] w-[160px]" data-step="10">
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Fuel amount">−</button>
 <input class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5 spend-cat" data-cat="fuel" type="number" inputmode="numeric" min="0" step="10" placeholder="0" aria-label="Fuel spend per month"/>
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Fuel amount">+</button>
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Fuel amount">+</button>
 </div>
 </div>
 <div class="spend-line flex items-center justify-between gap-3 border-b border-line py-space-sm">
 <span class="font-body-sm text-body-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">shopping_basket</span>Groceries</span>
-<div class="money-stepper flex items-stretch border border-line h-[52px] w-[188px]" data-step="10">
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Groceries amount">−</button>
+<div class="money-stepper flex items-stretch border border-line h-[40px] w-[160px]" data-step="10">
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Groceries amount">−</button>
 <input class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5 spend-cat" data-cat="groceries" type="number" inputmode="numeric" min="0" step="10" placeholder="0" aria-label="Groceries spend per month"/>
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Groceries amount">+</button>
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Groceries amount">+</button>
 </div>
 </div>
 <div class="spend-line flex items-center justify-between gap-3 border-b border-line py-space-sm">
 <span class="font-body-sm text-body-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">restaurant</span>Dining &amp; dinner</span>
-<div class="money-stepper flex items-stretch border border-line h-[52px] w-[188px]" data-step="10">
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Dining & dinner amount">−</button>
+<div class="money-stepper flex items-stretch border border-line h-[40px] w-[160px]" data-step="10">
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Dining & dinner amount">−</button>
 <input class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5 spend-cat" data-cat="dining" type="number" inputmode="numeric" min="0" step="10" placeholder="0" aria-label="Dining & dinner spend per month"/>
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Dining & dinner amount">+</button>
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Dining & dinner amount">+</button>
 </div>
 </div>
 <div class="spend-line flex items-center justify-between gap-3 border-b border-line py-space-sm">
 <span class="font-body-sm text-body-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">local_mall</span>Shopping</span>
-<div class="money-stepper flex items-stretch border border-line h-[52px] w-[188px]" data-step="10">
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Shopping amount">−</button>
+<div class="money-stepper flex items-stretch border border-line h-[40px] w-[160px]" data-step="10">
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Shopping amount">−</button>
 <input class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5 spend-cat" data-cat="shopping" type="number" inputmode="numeric" min="0" step="10" placeholder="0" aria-label="Shopping spend per month"/>
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Shopping amount">+</button>
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Shopping amount">+</button>
 </div>
 </div>
 <div class="spend-line flex items-center justify-between gap-3 border-b border-line py-space-sm">
 <span class="font-body-sm text-body-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">celebration</span>Leisure</span>
-<div class="money-stepper flex items-stretch border border-line h-[52px] w-[188px]" data-step="10">
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Leisure amount">−</button>
+<div class="money-stepper flex items-stretch border border-line h-[40px] w-[160px]" data-step="10">
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Leisure amount">−</button>
 <input class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5 spend-cat" data-cat="leisure" type="number" inputmode="numeric" min="0" step="10" placeholder="0" aria-label="Leisure spend per month"/>
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Leisure amount">+</button>
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Leisure amount">+</button>
 </div>
 </div>
 <div class="spend-line flex items-center justify-between gap-3 border-b border-line py-space-sm">
 <span class="font-body-sm text-body-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">directions_transit</span>Transport</span>
-<div class="money-stepper flex items-stretch border border-line h-[52px] w-[188px]" data-step="10">
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Transport amount">−</button>
+<div class="money-stepper flex items-stretch border border-line h-[40px] w-[160px]" data-step="10">
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Transport amount">−</button>
 <input class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5 spend-cat" data-cat="transport" type="number" inputmode="numeric" min="0" step="10" placeholder="0" aria-label="Transport spend per month"/>
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Transport amount">+</button>
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Transport amount">+</button>
 </div>
 </div>
 <div class="spend-line flex items-center justify-between gap-3 border-b border-line py-space-sm">
 <span class="font-body-sm text-body-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">flight_takeoff</span>Travel</span>
-<div class="money-stepper flex items-stretch border border-line h-[52px] w-[188px]" data-step="10">
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Travel amount">−</button>
+<div class="money-stepper flex items-stretch border border-line h-[40px] w-[160px]" data-step="10">
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Travel amount">−</button>
 <input class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5 spend-cat" data-cat="travel" type="number" inputmode="numeric" min="0" step="10" placeholder="0" aria-label="Travel spend per month"/>
-<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Travel amount">+</button>
+<button type="button" class="mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Travel amount">+</button>
 </div>
 </div>
 
@@ -198,14 +195,13 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
 <div class="flex flex-col gap-space-xs">
 <label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant" for="from-city">From</label>
-<input class="w-full h-[52px] bg-surface border border-line px-space-md text-primary font-body-sm focus:outline-none focus:border-primary city-input" list="cities-datalist" id="from-city" type="text" placeholder="Madrid (MAD)"/>
+<input class="w-full h-[40px] bg-surface border border-line px-space-md text-primary font-body-sm focus:outline-none focus:border-primary city-input" list="cities-datalist" id="from-city" type="text" placeholder="Madrid (MAD)"/>
 </div>
 <div class="flex flex-col gap-space-xs">
 <label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant" for="to-city">To</label>
-<input class="w-full h-[52px] bg-surface border border-line px-space-md text-primary font-body-sm focus:outline-none focus:border-primary city-input" list="cities-datalist" id="to-city" type="text" placeholder="Johannesburg (JNB)"/>
+<input class="w-full h-[40px] bg-surface border border-line px-space-md text-primary font-body-sm focus:outline-none focus:border-primary city-input" list="cities-datalist" id="to-city" type="text" placeholder="Johannesburg (JNB)"/>
 </div>
 </div>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Suggested trip from the brief: Madrid (MAD) to Johannesburg (JNB), business, dates within 3 days. Nearby options are Barcelona, Lisbon, and London.</p>
 
 <!-- Travellers + cabin -->
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
@@ -220,9 +216,9 @@
 <div class="flex flex-col gap-space-xs">
 <label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Cabin</label>
 <div class="flex gap-space-sm" id="cabin-options">
-<button type="button" class="cabin-pill h-[52px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-cabin="economy">Economy</button>
-<button type="button" class="cabin-pill h-[52px] px-space-md bg-primary border border-primary font-label-sm text-label-sm uppercase tracking-wider text-on-primary transition-colors" data-cabin="business">Business</button>
-<button type="button" class="cabin-pill h-[52px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-cabin="first">First</button>
+<button type="button" class="cabin-pill h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-cabin="economy">Economy</button>
+<button type="button" class="cabin-pill h-[40px] px-space-md bg-primary border border-primary font-label-sm text-label-sm uppercase tracking-wider text-on-primary transition-colors" data-cabin="business">Business</button>
+<button type="button" class="cabin-pill h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-cabin="first">First</button>
 </div>
 </div>
 </div>
@@ -231,15 +227,15 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
 <div class="flex flex-col gap-space-xs">
 <label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant" for="travel-date">When do you want to travel?</label>
-<input class="w-full h-[52px] bg-surface border border-line px-space-md text-primary font-figure-md focus:outline-none focus:border-primary" id="travel-date" type="date"/>
+<input class="w-full h-[40px] bg-surface border border-line px-space-md text-primary font-figure-md focus:outline-none focus:border-primary" id="travel-date" type="date"/>
 </div>
 <div class="flex flex-col gap-space-xs">
 <label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">When do you want to book?</label>
 <div class="flex flex-wrap gap-space-sm" id="lead-options">
-<button type="button" class="lead-pill h-[52px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-lead="15">15 days before</button>
-<button type="button" class="lead-pill h-[52px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-lead="30">1 month before</button>
-<button type="button" class="lead-pill h-[52px] px-space-md bg-primary border border-primary font-label-sm text-label-sm uppercase tracking-wider text-on-primary transition-colors" data-lead="60">2 months before</button>
-<button type="button" class="lead-pill h-[52px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-lead="90">3 months before</button>
+<button type="button" class="lead-pill h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-lead="15">15 days before</button>
+<button type="button" class="lead-pill h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-lead="30">1 month before</button>
+<button type="button" class="lead-pill h-[40px] px-space-md bg-primary border border-primary font-label-sm text-label-sm uppercase tracking-wider text-on-primary transition-colors" data-lead="60">2 months before</button>
+<button type="button" class="lead-pill h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-lead="90">3 months before</button>
 </div>
 <span class="font-figure-sm text-figure-sm text-quiet" id="lead-note">You would book around {book-date}.</span>
 </div>
@@ -251,7 +247,7 @@
 <span class="material-symbols-outlined text-[18px]">arrow_back</span>
 <span>Back</span>
 </button>
-<button class="inline-flex items-center justify-center gap-2 h-[56px] px-space-xl bg-primary text-on-primary font-label-md text-label-md uppercase tracking-[0.2em] transition-all hover:bg-primary-container shadow-md disabled:opacity-40 disabled:pointer-events-none" id="calculate-btn" disabled>
+<button class="inline-flex items-center justify-center gap-2 h-[40px] px-space-lg bg-primary text-on-primary font-label-md text-label-md uppercase tracking-[0.2em] transition-all hover:bg-primary-container shadow-md disabled:opacity-40 disabled:pointer-events-none" id="calculate-btn" disabled>
 <span class="material-symbols-outlined text-[20px]">calculate</span>
 <span>Calculate my plan</span>
 </button>
@@ -268,11 +264,10 @@
 <h3 class="font-headline-sm text-headline-sm text-on-error-container" id="calc-error-title">We could not complete the calculation</h3>
 <p class="font-body-sm text-body-sm text-on-error-container" id="calc-error-text"></p>
 <div class="flex flex-wrap items-center gap-space-sm">
-<button class="inline-flex items-center justify-center gap-2 h-[46px] px-space-lg bg-on-error-container text-error-container font-label-md text-label-md uppercase tracking-[0.18em] transition-all hover:opacity-80" id="calc-fix">Back to step 1</button>
-<button class="inline-flex items-center justify-center gap-2 h-[46px] px-space-lg bg-transparent border border-on-error-container text-on-error-container font-label-md text-label-md uppercase tracking-[0.18em] transition-all hover:bg-on-error-container/10" id="calc-retry">Try again</button>
-<a class="hidden inline-flex items-center justify-center gap-2 h-[46px] px-space-lg bg-surface text-primary font-label-md text-label-md uppercase tracking-[0.18em]" href="/login" id="calc-login">Sign in</a>
+<button class="inline-flex items-center justify-center gap-2 h-[40px] px-space-md bg-on-error-container text-error-container font-label-md text-label-md uppercase tracking-[0.18em] transition-all hover:opacity-80" id="calc-fix">Back to step 1</button>
+<button class="inline-flex items-center justify-center gap-2 h-[40px] px-space-md bg-transparent border border-on-error-container text-on-error-container font-label-md text-label-md uppercase tracking-[0.18em] transition-all hover:bg-on-error-container/10" id="calc-retry">Try again</button>
+<a class="hidden inline-flex items-center justify-center gap-2 h-[40px] px-space-md bg-surface text-primary font-label-md text-label-md uppercase tracking-[0.18em]" href="/login" id="calc-login">Sign in</a>
 </div>
-<p class="font-label-sm text-label-sm uppercase tracking-widest text-on-error-container/70">You can also click step 1 or step 2 above to go back.</p>
 </div>
 <div id="calc-results" class="hidden flex-col gap-space-md">
 <div id="plan-saved-bar" class="hidden flex-wrap items-center justify-between gap-space-sm border border-line bg-surface p-space-sm">
@@ -284,7 +279,6 @@
 </div>
 <div class="bg-surface border border-line p-space-md flex flex-col gap-space-sm">
 <h3 class="font-headline-sm text-headline-sm text-primary">What to spend on each card</h3>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Each purchase goes on the card you selected that earns the most points.</p>
 <div id="card-plan-lines" class="flex flex-col gap-2"></div>
 </div>
 <!-- Verdict -->
@@ -415,7 +409,7 @@
     const up = document.createElement("button");
     [[down, "down", "Decrease"], [up, "up", "Increase"]].forEach(([btn, dir, verb]) => {
       btn.type = "button";
-      btn.className = "mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer";
+      btn.className = "mstep-btn w-9 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer";
       btn.dataset.dir = dir;
       btn.setAttribute("aria-label", verb + " " + aria);
       btn.textContent = dir === "down" ? "−" : "+";
@@ -569,13 +563,12 @@ const state = {
     Object.keys(state.cards).forEach(name => {
       const row = document.createElement("div");
       row.className = "flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-surface border border-line p-space-sm";
-      row.innerHTML = '<div class="flex flex-col"><span class="font-label-sm text-label-sm uppercase tracking-widest text-primary">' + esc(CARD_LABEL[name] || name) + '</span>' +
-        '<span class="font-figure-sm text-figure-sm text-quiet">Points already on this card</span></div>';
+      row.innerHTML = '<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary">' + esc(CARD_LABEL[name] || name) + '</span>';
       row.appendChild(makeStepper({
         step: 1000,
         aria: "Points on " + (CARD_LABEL[name] || name),
-        boxCls: "w-[210px]",
-        valCls: "h-[48px] font-figure-lg text-figure-lg text-primary bg-transparent focus:outline-none focus:bg-primary/5",
+        boxCls: "h-[40px] w-[160px]",
+        valCls: "font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5",
         value: state.cards[name].points || undefined,
         placeholder: "0",
         onChange: (v) => { state.cards[name].points = v; },
@@ -658,7 +651,7 @@ const state = {
     const amtBox = makeStepper({
       step: 50,
       aria: "Purchase amount",
-      boxCls: "w-[160px]",
+      boxCls: "h-[40px] w-[160px]",
       valCls: "h-[40px] font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5",
       placeholder: "0",
     });
