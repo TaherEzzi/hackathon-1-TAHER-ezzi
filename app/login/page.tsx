@@ -1,7 +1,7 @@
 import { LoginForm } from "./login-form";
 
 export const metadata = {
-  title: "Sign in — A Una Milla",
+  title: "A Una Milla",
   description: "Access your sovereign travel folio.",
 };
 

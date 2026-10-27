@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 
 export const metadata = {
-  title: "A Una Milla — The House",
+  title: "A Una Milla",
   description: "Aeronautical arbitrage for the discerning traveler. The House, Trip Dossier, Capital & Spend, Sovereign Roadmap.",
+  icons: { icon: [{ url: "/favicon.ico" }, { url: "/favicon.png", type: "image/png" }] },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
