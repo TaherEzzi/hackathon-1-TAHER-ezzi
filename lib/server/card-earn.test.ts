@@ -5,7 +5,9 @@ import {
   CARD_RATE_TABLE,
   discountEuros,
   pointsPerEuro,
+  resolveEurosPerPoint,
   routeSpend,
+  spendInstructions,
   bonusPointsByMonth,
   type CardProduct,
 } from "./card-earn";
@@ -91,6 +93,14 @@ describe("routeSpend", () => {
     assert.equal(routed.monthlyPoints, 1675);
   });
 
+  it("tells the traveller which purchases belong on each selected card", () => {
+    const routed = routeSpend(["amex_gold", "revolut_metal"], { fuel: 40, dining: 80, groceries: 100 });
+    assert.deepEqual(spendInstructions(routed.routes), [
+      "Spend fuel and dining on Amex Gold.",
+      "Spend groceries on Revolut Metal.",
+    ]);
+  });
+
   it("adds the published spend bonus only after that card's own spend clears its threshold", () => {
     const gold = routeSpend(["amex_gold"], {}, 3000);
     assert.equal(gold.monthlyPoints, 1587);
@@ -156,14 +166,31 @@ describe("discountEuros", () => {
 
   it("rejects extra points that are not a real balance", () => {
     assert.throws(
-      () => discountEuros({ cashEur: 1200, taxesEur: 200, milesNeeded: 50_000, pointsHeld: 0, monthlyPoints: 0, months: 1, extraPoints: Number.NaN }),
+      () => discountEuros({ cashEur: 1200, taxesEur: 200, milesNeeded: 50_000, pointsHeld: 0, monthlyPoints: 0, months: 1, extraPoints: Number.NaN, eurosPerPoint: 0.015 }),
       (error: unknown) => error instanceof InsufficientData,
     );
   });
 
   it("rejects a held balance that is not a real number", () => {
     assert.throws(
-      () => discountEuros({ cashEur: 1200, taxesEur: 200, milesNeeded: 50_000, pointsHeld: Number.NaN, monthlyPoints: 0, months: 1 }),
+      () => discountEuros({ cashEur: 1200, taxesEur: 200, milesNeeded: 50_000, pointsHeld: Number.NaN, monthlyPoints: 0, months: 1, eurosPerPoint: 0.015 }),
+      (error: unknown) => error instanceof InsufficientData,
+    );
+  });
+});
+
+describe("resolveEurosPerPoint", () => {
+  it("uses the midpoint of a real pair", () => {
+    assert.equal(resolveEurosPerPoint({ low: 0.012, high: 0.018 }), 0.015);
+  });
+
+  it("uses 1.5 cents when the card has no pair row", () => {
+    assert.equal(resolveEurosPerPoint(null), 0.015);
+  });
+
+  it("rejects a pair that is not a real range", () => {
+    assert.throws(
+      () => resolveEurosPerPoint({ low: Number.NaN, high: 0.02 }),
       (error: unknown) => error instanceof InsufficientData,
     );
   });

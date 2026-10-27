@@ -34,7 +34,7 @@ import { getOffersCached, repriceOfferCached, cheapestSaneOffer, type DuffelOffe
 import { computeBookNowVerdict } from "./verdict-engine";
 import { memoryCacheStore, type CacheStore } from "./cache";
 import { usdEurCached } from "./fx";
-import { bonusPointsByMonth, discountEuros, pointsAvailable, routeSpend, type CardProduct, type CardRouting, type SpendCategory } from "./card-earn";
+import { bonusPointsByMonth, discountEuros, pointsAvailable, resolveEurosPerPoint, routeSpend, spendInstructions, type CardProduct, type CardRouting, type SpendCategory } from "./card-earn";
 import { fillMissingFares, stampMissingCash, type FareEstimate, type FilledFares } from "./fare-estimate";
 import { awardForRoute, estimateCashEur, parseCabin } from "./award-estimate";
 import { estimateTripPrices } from "./grok";
@@ -671,6 +671,7 @@ export interface RunwayResult {
   projection?: { anchored_on: string; horizon_edge: string } | null;
   card_routing: CardRouting["routes"];
   spend_bonuses: CardRouting["bonuses"];
+  spend_instructions: string[];
   monthly_points: number | null;
   amex_travel_per_euro: number | null;
   badges: string[];
@@ -703,6 +704,17 @@ async function requestFareEstimate(ctx: EngineContext, input: RunwayInput, missi
     if (error instanceof ProviderError) throw error;
     throw new ProviderError("grok", error instanceof Error ? error.message : String(error));
   }
+}
+
+function routingPayload(routed: CardRouting | null): Pick<RunwayResult, "card_routing" | "spend_bonuses" | "spend_instructions" | "monthly_points" | "amex_travel_per_euro"> {
+  const routes = routed?.routes ?? [];
+  return {
+    card_routing: routes,
+    spend_bonuses: routed?.bonuses ?? [],
+    spend_instructions: spendInstructions(routes),
+    monthly_points: routed?.monthlyPoints ?? null,
+    amex_travel_per_euro: routed?.amexTravelPerEuro ?? null,
+  };
 }
 
 /** F1 — the runway ranked by TOTAL money value (D21) incl. the accelerator branch. */
@@ -782,10 +794,7 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
       accelerator: null,
       uses_program: null,
       card_gate: { asked: false, card: null, reason: null },
-      card_routing: routed?.routes ?? [],
-      spend_bonuses: routed?.bonuses ?? [],
-      monthly_points: routed?.monthlyPoints ?? null,
-      amex_travel_per_euro: routed?.amexTravelPerEuro ?? null,
+      ...routingPayload(routed),
       badges: [],
       attribution: ctx.attribution,
     };
@@ -799,6 +808,9 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
 
   // One balance lookup for the whole window. The date loop only applies it.
   const reachableToday = awardProgram ? await reachableByOneEdge(ctx, balances, awardProgram) : null;
+
+  // One rate for every date. A missing pair is the 1.5-cent cash offset, not a per-date lookup.
+  const eurosPerPoint = resolveEurosPerPoint(pair);
 
   // ── per-candidate computation (no provider call inside this loop) ─────────
   const candidates: RunwayCandidate[] = [];
@@ -866,12 +878,6 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
     const extraPoints = routed ? bonusPointsByMonth(routed.bonuses, months) : 0;
     const held = input.pointsHeld ?? 0;
     const pointsAtDate = pointsAvailable({ pointsHeld: held, monthlyPoints, months, extraPoints });
-    // A partial balance is worth the points times the card pair's euro value.
-    // With no pair row, one point is 1.5 cents — never (cash − taxes) ÷ the award miles,
-    // which prices 11,400 points at a few euros on a cheap fare.
-    const eurosPerPoint = pair && pair.low > 0 && pair.high >= pair.low
-      ? Math.round(((pair.low + pair.high) / 2) * 1e5) / 1e5
-      : 0.015;
     const discount = discountEuros({
       cashEur: expectedCash,
       taxesEur: quote.taxes.amount,
@@ -944,10 +950,7 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
     uses_program: awardProgram,
     card_gate: { asked: true, card, reason: null },
     ...(projection ? { projection } : {}),
-    card_routing: routed?.routes ?? [],
-    spend_bonuses: routed?.bonuses ?? [],
-    monthly_points: routed?.monthlyPoints ?? null,
-    amex_travel_per_euro: routed?.amexTravelPerEuro ?? null,
+    ...routingPayload(routed),
     badges: [],
     attribution: ctx.attribution,
   };

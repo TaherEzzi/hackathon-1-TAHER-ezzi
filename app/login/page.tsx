@@ -1,6 +1,7 @@
+import type { Metadata } from "next";
 import { LoginForm } from "./login-form";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "A Una Milla",
   description: "Access your sovereign travel folio.",
 };

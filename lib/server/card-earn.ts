@@ -74,6 +74,57 @@ export function pointsPerEuro(product: CardProduct, category: SpendCategory): nu
   return CARD_RATE_TABLE[product][category];
 }
 
+const CATEGORY_LABEL: Record<SpendCategory, string> = {
+  fuel: "fuel",
+  groceries: "groceries",
+  dining: "dining",
+  shopping: "shopping",
+  leisure: "leisure",
+  transport: "transport",
+  travel: "travel",
+};
+
+const CARD_LABEL: Record<CardProduct, string> = {
+  amex_gold: "Amex Gold",
+  amex_green: "Amex Green",
+  amex_business_gold: "Amex Business Gold",
+  amex_platinum: "Amex Platinum",
+  amex_business_platinum: "Amex Business Platinum",
+  amex_centurion: "Amex Centurion",
+  revolut_premium: "Revolut Premium",
+  revolut_metal: "Revolut Metal",
+  revolut_ultra: "Revolut Ultra",
+};
+
+function listPhrase(items: readonly string[]): string {
+  if (items.length <= 1) return items[0] ?? "";
+  if (items.length === 2) return `${items[0]} and ${items[1]}`;
+  return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
+}
+
+/** One sentence per card: which of the traveller's purchases belong on it. */
+export function spendInstructions(routes: readonly CategoryAssignment[]): string[] {
+  const byCard = new Map<CardProduct, Set<SpendCategory>>();
+  for (const route of routes) {
+    if (!(route.euros > 0)) continue;
+    let categories = byCard.get(route.card);
+    if (!categories) {
+      categories = new Set();
+      byCard.set(route.card, categories);
+    }
+    categories.add(route.category);
+  }
+  const lines: string[] = [];
+  for (const card of CARD_PRODUCTS) {
+    const categories = byCard.get(card);
+    if (!categories || categories.size === 0) continue;
+    const names = SPEND_CATEGORIES.filter((category) => categories.has(category)).map((category) => CATEGORY_LABEL[category]);
+    if (names.length === 0) continue;
+    lines.push(`Spend ${listPhrase(names)} on ${CARD_LABEL[card]}.`);
+  }
+  return lines;
+}
+
 export interface CategoryAssignment {
   category: SpendCategory;
   euros: number;
@@ -234,6 +285,17 @@ export function pointsAvailable(input: {
   requireAmount("months", input.months);
   if (input.extraPoints !== undefined) requireAmount("extra points", input.extraPoints);
   return input.pointsHeld + input.monthlyPoints * input.months + (input.extraPoints ?? 0);
+}
+
+/** One and a half euro cents. The cash offset when the selected card has no pair row. */
+export const FALLBACK_EUR_PER_POINT = 0.015;
+
+export function resolveEurosPerPoint(pair: { low: number; high: number } | null): number {
+  if (!pair) return FALLBACK_EUR_PER_POINT;
+  if (!Number.isFinite(pair.low) || !Number.isFinite(pair.high) || !(pair.low > 0) || pair.high < pair.low) {
+    throw new InsufficientData("routing: pair value must be a finite range with low > 0");
+  }
+  return Math.round(((pair.low + pair.high) / 2) * 1e5) / 1e5;
 }
 
 export function discountEuros(input: {

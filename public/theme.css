@@ -183,6 +183,10 @@ html[data-theme="dark"] .bg-primary-container.text-surface,
 html[data-theme="dark"] .bg-primary-container.text-surface-bright,
 html[data-theme="dark"] .bg-primary-container .text-surface-bright,
 html[data-theme="dark"] .bg-primary-container .text-on-primary-container { color: #041614 !important; }
+/* Ivory buttons keep ink. Dark mode otherwise paints .text-primary the same cream as the button. */
+html[data-theme="dark"] .bg-surface-bright { background-color: #fff9ee !important; }
+html[data-theme="dark"] .bg-surface-bright.text-primary,
+html[data-theme="dark"] .bg-surface-bright .text-primary { color: #041614 !important; }
 
 html[data-theme="dark"] .border-line { border-color: rgba(18, 224, 196, 0.28) !important; }
 html[data-theme="dark"] .border-line\/60 { border-color: rgba(18, 224, 196, 0.6) !important; }
@@ -249,4 +253,104 @@ html[data-theme="dark"] .placeholder\:text-quiet::placeholder { color: #8aa8a4 !
 .timeline-btn,
 .theme-switch button {
   cursor: pointer;
+}
+
+.mobile-nav__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 0.5rem;
+  font-family: Outfit, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #5e7094;
+}
+
+.mobile-nav__link[aria-current="page"] {
+  color: #00173a;
+  box-shadow: inset 0 -2px 0 #00173a;
+}
+
+html[data-theme="dark"] .mobile-nav__link {
+  color: #8aa8a4;
+}
+
+html[data-theme="dark"] .mobile-nav__link[aria-current="page"] {
+  color: #e8f6f2;
+  box-shadow: inset 0 -2px 0 #12e0c4;
+}
+
+@media (max-width: 1023px) {
+  .site-logo__mark {
+    height: 3.4rem;
+    max-width: min(8.5rem, 42vw);
+  }
+
+  header:has(.mobile-nav) .h-24 {
+    height: 4.5rem;
+  }
+
+  header:has(.mobile-nav) + main.pt-24 {
+    padding-top: 7.75rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .theme-switch button {
+    padding: 0 6px;
+    letter-spacing: 0.08em;
+  }
+}
+
+@media (max-width: 640px) {
+  .house-band {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .step-tab {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-height: 52px;
+  }
+
+  .step-tab .font-label-sm {
+    letter-spacing: 0.06em;
+    font-size: 9px;
+    line-height: 1.25;
+  }
+
+  .spend-line {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+
+  .spend-line > .money-stepper {
+    width: 100% !important;
+  }
+
+  .spend-line > .flex {
+    width: 100%;
+  }
+
+  .spend-line > .flex .money-stepper {
+    width: auto !important;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .plan-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .plan-actions > button,
+  .plan-actions > a {
+    width: 100%;
+  }
 }
