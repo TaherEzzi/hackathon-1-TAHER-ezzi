@@ -700,6 +700,8 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
     accelerator,
     uses_program: awardProgram,
     card_gate: { asked: true, card, reason: card ? null : "D19: sin carta no hay valor" },
+    // D30: when no verified award row exists the caller must know WHY — never a silent empty
+    ...(awardProgram && awardQuote ? {} : { insufficient_reason: "fixture: sin fila de canje verificada para esta ruta/programa/cabina (ritual D30 pendiente) — el veredicto no se inventa" }),
     badges: ["estimación", "proyección"],
     attribution: ctx.attribution,
   };

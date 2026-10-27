@@ -57,7 +57,8 @@ function applyTheme(theme) {
   });
 }
 
-function bootTheme() {
+/** Wire theme toggle controls on the current document. Safe to call once per page load. */
+export function bootTheme() {
   applyTheme(readStoredTheme().theme);
   document.querySelectorAll("[data-theme-choice]").forEach((node) => {
     if (!(node instanceof HTMLButtonElement)) return;
@@ -68,5 +69,3 @@ function bootTheme() {
     });
   });
 }
-
-if (typeof document !== "undefined") bootTheme();

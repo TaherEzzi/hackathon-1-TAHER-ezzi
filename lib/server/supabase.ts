@@ -5,8 +5,10 @@
  * - userClientFrom(req): publishable key + the caller's own bearer token — reads ride RLS.
  * Secrets never appear in responses or logs.
  */
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient, type User } from "@supabase/supabase-js";
 import type { Database } from "../database.types";
+import { createServerSupabaseClient } from "../supabase/server";
+import { isUnauthorized, unauthorized } from "./http-error";
 
 function missing(name: string): never {
   throw new Error(`server misconfiguration: ${name} missing from environment`);
@@ -42,25 +44,49 @@ export interface Actor {
   is_app_admin: boolean;
 }
 
-/** Validate the caller's identity through their own token (never client-stated). */
+function isAppAdmin(metadata: User["app_metadata"]): boolean {
+  if (!metadata || typeof metadata !== "object") return false;
+  return (metadata as Record<string, unknown>).aum_admin === true;
+}
+
+function actorFromUser(user: User): Actor {
+  return {
+    id: user.id,
+    email: user.email ?? null,
+    is_app_admin: isAppAdmin(user.app_metadata),
+  };
+}
+
+/** Validate identity via Bearer token (API clients) or Supabase Auth cookies (browser). */
 export async function requireUser(req: Request): Promise<{ user: Actor; client: SupabaseClient<Database> }> {
-  const client = userClientFrom(req);
+  const bearer = req.headers.get("authorization")?.trim() ?? "";
+  if (/^Bearer\s+\S+/i.test(bearer)) {
+    const client = userClientFrom(req);
+    const {
+      data: { user },
+      error,
+    } = await client.auth.getUser();
+    if (error || !user) unauthorized();
+    return { user: actorFromUser(user), client };
+  }
+
+  const client = await createServerSupabaseClient();
   const {
     data: { user },
     error,
   } = await client.auth.getUser();
-  if (error || !user) {
-    throw Object.assign(new Error("unauthorized"), { status: 401, code: "unauthorized" });
+  if (error || !user) unauthorized();
+  return { user: actorFromUser(user), client };
+}
+
+/** Session lookup without throwing — for optional UI endpoints. */
+export async function optionalUser(req: Request): Promise<{ user: Actor; client: SupabaseClient<Database> } | null> {
+  try {
+    return await requireUser(req);
+  } catch (error) {
+    if (isUnauthorized(error)) return null;
+    throw error;
   }
-  // admin authorization reads the app_metadata claim — users cannot self-edit it
-  return {
-    user: {
-      id: user.id,
-      email: user.email ?? null,
-      is_app_admin: (user.app_metadata?.aum_admin ?? false) === true,
-    },
-    client,
-  };
 }
 
 /** RFC-7807-ish typed error response — never silent, never a raw stack, never a secret. */

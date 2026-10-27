@@ -3,8 +3,7 @@
  * client for reads (RLS), a service-role usage sink bound to the actor, and
  * the shared in-process cache store. Secrets stay inside server modules.
  */
-import { userClientFrom } from "./supabase";
-import { serviceClient } from "./supabase";
+import { requireUser, serviceClient } from "./supabase";
 import { makeContext, type EngineContext } from "./engine";
 import { bumpUsage } from "./audit";
 import { memoryCacheStore, type CacheStore } from "./cache";
@@ -22,21 +21,9 @@ export interface WiredEngine {
 
 /** Build the engine context for an authenticated call: RLS reads + usage sink. */
 export async function engineForUser(req: Request, cache: CacheStore = memoryCacheStore()): Promise<WiredEngine> {
-  const userClient = userClientFrom(req);
-  const {
-    data: { user: authUser },
-    error,
-  } = await userClient.auth.getUser();
-  if (error || !authUser) {
-    throw Object.assign(new Error("unauthorized"), { status: 401, code: "unauthorized" });
-  }
-  const user: WiredActor = {
-    id: authUser.id,
-    email: authUser.email ?? null,
-    is_app_admin: (authUser.app_metadata?.aum_admin ?? false) === true,
-  };
+  const { user, client: userClient } = await requireUser(req);
   const service = serviceClient();
-  const ctx: EngineContext = await makeContext(userClient, usageSink(service, authUser.id), cache);
+  const ctx: EngineContext = await makeContext(userClient, usageSink(service, user.id), cache);
   return { ctx, user };
 }
 

@@ -1,0 +1,1 @@
+../web/auth-bar.mjs
