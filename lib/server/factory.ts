@@ -7,6 +7,8 @@ import { requireUser, serviceClient } from "./supabase";
 import { makeContext, type EngineContext } from "./engine";
 import { bumpUsage } from "./audit";
 import { memoryCacheStore, type CacheStore } from "./cache";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "../database.types";
 
 export interface WiredActor {
   id: string;
@@ -22,9 +24,12 @@ export interface WiredEngine {
 /** Build the engine context for an authenticated call: RLS reads + usage sink. */
 export async function engineForUser(req: Request, cache: CacheStore = memoryCacheStore()): Promise<WiredEngine> {
   const { user, client: userClient } = await requireUser(req);
-  const service = serviceClient();
-  const ctx: EngineContext = await makeContext(userClient, usageSink(service, user.id), cache);
-  return { ctx, user };
+  return { ctx: await engineForActor(user, userClient, cache), user };
+}
+
+/** Same wiring for a caller whose identity a route already checked (no second auth round trip). */
+export async function engineForActor(user: WiredActor, userClient: SupabaseClient<Database>, cache: CacheStore = memoryCacheStore()): Promise<EngineContext> {
+  return makeContext(userClient, usageSink(serviceClient(), user.id), cache);
 }
 
 /** Every FRESH provider roundtrip appends to `usage` (service role, Europe/Madrid day). */

@@ -1,45 +1,58 @@
 /**
  * /api/itineraries — F7 saved-trip records.
- * POST computes the verdict SERVER-side (the calls hit bookNowCompare on the
- * server; the route then writes the verdict columns with the SERVICE role) —
- * a client can never mint a verdict. GET/DELETE ride the caller's own client
- * (RLS: own rows). A DB CHECK violation is a bug in the engine, never a
+ * POST computes SERVER-side (bookNowCompare for book_now, runwayCompute for a
+ * plan) and the row is written with the SERVICE role — a client can never
+ * mint a verdict. GET lists own rows, or one row with ?id=; DELETE removes
+ * one (RLS: own rows). A DB CHECK violation is a bug in the engine, never a
  * suppressed insert.
  */
 import { z } from "zod";
-import { requireUser, typedError, serviceClient, userClientFrom } from "../../../lib/server/supabase";
-import { engineForUser } from "../../../lib/server/factory";
-import { bookNowCompare } from "../../../lib/server/engine";
-import { writeAudit } from "../../../lib/server/audit";
-import type { Database, Json } from "../../../lib/database.types";
+import { requireUser, typedError, serviceClient } from "../../../lib/server/supabase";
+import { engineForActor } from "../../../lib/server/factory";
+import { bookNowCompare, runwayCompute } from "../../../lib/server/engine";
+import { parseItineraryRequest } from "../../../lib/server/itinerary-request";
+import { bookNowRow, planUrl, runwayRow } from "../../../lib/server/itinerary-row";
+import { insertItinerary } from "../../../lib/server/itinerary-store";
+import { InsufficientData } from "../../../lib/engine/verdict.mjs";
 
 export const runtime = "nodejs";
 
-const postBody = z.object({
-  mode: z.enum(["plan", "book_now"]).default("book_now"),
-  origin: z.string().trim().regex(/^[A-Za-z]{3}$/).transform((s) => s.toUpperCase()),
-  destination: z.string().trim().regex(/^[A-Za-z]{3}$/).transform((s) => s.toUpperCase()),
-  depart_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  cabin: z.enum(["economy", "premium", "business", "first"]),
-  pax: z.number().int().min(1).max(9),
-  card: z.string().trim().regex(/^[A-Z_]{2,12}$/).optional().nullable(),
-  target_program: z.string().trim().regex(/^[A-Z_]{2,12}$/).optional().nullable(),
-  explanation: z.string().max(4000).optional(),
-});
+const LIST_LIMIT = 100;
+/** The list never ships the stored runway; only the plan's own verdict is lifted out of it. */
+const LIST_COLUMNS =
+  "id, mode, origin, destination, window_start, window_end, depart_date, cabin, pax, cash_amount, cash_currency, miles, verdict, savings_eur, savings_pct, badges, created_at, plan_verdict:breakdown->runway->recommended->>verdict";
+
+function errorResponse(err: unknown): Response {
+  if ((err as { status?: number }).status === 401) return typedError(401, "unauthorized", "sign in first");
+  if (err instanceof InsufficientData) return typedError(400, "insufficient_data", err.detail);
+  if ((err as { code?: string }).code === "provider_error") {
+    const e = err as Error & { provider?: string };
+    return typedError(502, "provider_error", e.message.slice(0, 400), { provider: e.provider ?? "duffel" });
+  }
+  console.error("itineraries route failed", { error: err });
+  return typedError(500, "internal", err instanceof Error ? err.message : String(err));
+}
 
 export async function GET(req: Request): Promise<Response> {
   try {
     const { client } = await requireUser(req);
+    const id = new URL(req.url).searchParams.get("id");
+    if (id) {
+      if (!z.string().uuid().safeParse(id).success) return typedError(400, "bad_request", "id must be a uuid");
+      const { data, error } = await client.from("itineraries").select("*").eq("id", id).maybeSingle();
+      if (error) return typedError(500, "itinerary_read", error.message);
+      if (!data) return typedError(404, "itinerary_not_found", "no saved trip with that id");
+      return Response.json({ itinerary: data });
+    }
     const { data, error } = await client
       .from("itineraries")
-      .select("*")
+      .select(LIST_COLUMNS)
       .order("created_at", { ascending: false })
-      .limit(100);
+      .limit(LIST_LIMIT);
     if (error) return typedError(500, "itinerary_read", error.message);
     return Response.json({ itineraries: data ?? [] });
   } catch (err) {
-    if ((err as { status?: number }).status === 401) return typedError(401, "unauthorized", "sign in first");
-    return typedError(500, "internal", err instanceof Error ? err.message : String(err));
+    return errorResponse(err);
   }
 }
 
@@ -52,20 +65,51 @@ export async function DELETE(req: Request): Promise<Response> {
     if (error) return typedError(400, "itinerary_delete", error.message);
     return Response.json({ ok: true });
   } catch (err) {
-    if ((err as { status?: number }).status === 401) return typedError(401, "unauthorized", "sign in first");
-    return typedError(500, "internal", err instanceof Error ? err.message : String(err));
+    return errorResponse(err);
   }
 }
 
 export async function POST(req: Request): Promise<Response> {
   try {
-    const { user } = await requireUser(req);
-    const parsed = postBody.safeParse(await req.json().catch(() => ({})));
-    if (!parsed.success) return typedError(400, "bad_request", parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
-    const { ctx } = await engineForUser(req);
-    const input = parsed.data;
+    const { user, client } = await requireUser(req);
+    const parsed = parseItineraryRequest(await req.json().catch(() => ({})));
+    if (!parsed.ok) return typedError(400, "bad_request", parsed.message);
+    const ctx = await engineForActor(user, client);
+    const input = parsed.value;
+    const service = serviceClient();
 
-    // engine computes (server-side, code-only math)
+    if (input.mode === "plan") {
+      const result = await runwayCompute(ctx, {
+        origin: input.origin,
+        destination: input.destination,
+        window: input.window,
+        cabin: input.cabin,
+        pax: input.pax,
+        card: input.card ?? null,
+        plan: input.plan ?? null,
+        cards: input.cards,
+        spend: input.spend,
+        pointsHeld: input.pointsHeld,
+        monthlyTotal: input.monthlyTotal,
+      });
+      const row = runwayRow(user.id, {
+        origin: input.origin,
+        destination: input.destination,
+        window: input.window,
+        cabin: input.cabin,
+        pax: input.pax,
+        travel_date: input.travel_date ?? null,
+        lead_days: input.lead_days ?? null,
+        cards: input.cards ?? [],
+        points_held: input.pointsHeld ?? 0,
+        monthly_total: input.monthlyTotal ?? 0,
+        spend: input.spend ?? {},
+        plan: input.plan ?? null,
+      }, result);
+      const id = row ? await insertItinerary(service, row, "planner") : null;
+      return Response.json({ itinerary_id: id, plan_url: id ? planUrl(id) : null, result }, { status: id ? 201 : 200 });
+    }
+
     const result = await bookNowCompare(ctx, {
       origin: input.origin,
       destination: input.destination,
@@ -75,45 +119,9 @@ export async function POST(req: Request): Promise<Response> {
       card: input.card ?? null,
       target_program: input.target_program ?? null,
     });
-
-    const service = serviceClient();
-    const row = {
-      user_id: user.id,
-      mode: input.mode,
-      origin: input.origin,
-      destination: input.destination,
-      depart_date: input.depart_date,
-      cabin: input.cabin,
-      pax: input.pax,
-      cash_amount: result.cash?.amount ?? null,
-      cash_currency: result.cash?.currency ?? null,
-      miles: (result.award?.miles ?? null) as number | null,
-      taxes_amount: result.award?.taxes.amount ?? null,
-      taxes_currency: result.award?.taxes.currency ?? null,
-      verdict: result.verdict as string,
-      savings_eur: result.savings_eur,
-      savings_pct: result.savings_pct,
-      range_low: null as number | null, // book-now is a live comparison; ranges belong to plan mode rows
-      range_high: null as number | null,
-      badges: result.badges as unknown as string[],
-      breakdown: (result.breakdown ?? {}) as unknown as Json,
-      explanation: input.explanation ?? result.insufficient_reason ?? null,
-    };
-    // a DB CHECK violation here is a bug in the engine — let it surface, never suppress
-    const { data: inserted, error } = await service.from("itineraries").insert(row).select("id").single();
-    if (error) return typedError(500, "itinerary_write", error.message);
-    await writeAudit(service, {
-      actor: user.id,
-      action: "itinerary_saved",
-      entity: "itineraries",
-      details: { itinerary_id: inserted?.id, verdict: row.verdict, route: `${row.origin}-${row.destination}` },
-    });
-    return Response.json({ itinerary_id: inserted?.id, result }, { status: 201 });
+    const id = await insertItinerary(service, bookNowRow(user.id, input, result), "api");
+    return Response.json({ itinerary_id: id, plan_url: planUrl(id), result }, { status: 201 });
   } catch (err) {
-    if ((err as { status?: number }).status === 401) return typedError(401, "unauthorized", "sign in first");
-    return typedError(500, "internal", err instanceof Error ? err.message : String(err));
+    return errorResponse(err);
   }
 }
-
-// keep the user client import referenced for routing-time tree-shaking clarity
-void userClientFrom;

@@ -1,136 +1,161 @@
 /**
- * POST /api/chat — the F12 turn: parse (Grok) → compute (code, engine above) →
- * explain (Grok). The LLM never computes; every number in the structured
- * payload comes from the engine. The persona one-tap path builds its intent
- * from the T1 seed directly (labelled test data, no typing required).
+ * /api/chat — the sessioned chat agent.
+ * POST { session_id?, text } runs one turn: load the session's memory, let
+ * Grok answer or gather facts, compute with the engine once the facts are
+ * complete, save the trip, and return plan_url for the plan page.
+ * POST { persona: true } keeps the stateless T1 one-tap turn.
+ * GET lists the caller's sessions, or one thread with ?session_id=.
+ * DELETE ?session_id= removes a thread (RLS: own rows).
  */
 import { z } from "zod";
-import { requireUser, typedError } from "../../../lib/server/supabase";
-import { engineForUser } from "../../../lib/server/factory";
-import { bookNowCompare, runwayCompute } from "../../../lib/server/engine";
-import { parseIntent, explain, UnparsedIntent } from "../../../lib/server/grok";
+import { requireUser, serviceClient, typedError } from "../../../lib/server/supabase";
+import { engineForActor } from "../../../lib/server/factory";
+import { bookNowCompare, runwayCompute, type EngineContext } from "../../../lib/server/engine";
+import { chatTurn, explainFacts } from "../../../lib/server/grok";
+import { runChatTurn } from "../../../lib/server/chat-turn";
+import { appendMessage, listSessions, openSession, recentMessages, saveSessionState, sessionThread } from "../../../lib/server/chat-store";
+import { insertItinerary } from "../../../lib/server/itinerary-store";
+import { personaTurn } from "../../../lib/server/chat-persona";
+import { HttpError } from "../../../lib/server/http-error";
+import type { Json } from "../../../lib/database.types";
 
 export const runtime = "nodejs";
 
+const HISTORY_FOR_MODEL = 20;
+const SESSION_LIST_LIMIT = 20;
+
 const bodySchema = z.object({
+  session_id: z.string().uuid().optional(),
   text: z.string().trim().min(1).max(2000).optional(),
   persona: z.boolean().optional(),
-  /** D19 card gate: the chat asks which card funds the trip; the traveller answers */
+  /** D19 card gate for the persona one-tap turn */
   card: z.string().trim().regex(/^[A-Z_]{2,12}$/).optional(),
 });
 
 const isoDay = (d: Date) => d.toISOString().slice(0, 10);
 
+interface RouteError {
+  status: number;
+  code: string;
+  message: string;
+  extra?: Record<string, unknown>;
+}
+
+function classify(err: unknown): RouteError {
+  if (err instanceof HttpError) return { status: err.status, code: err.code, message: err.message };
+  if ((err as { status?: number }).status === 401) return { status: 401, code: "unauthorized", message: "sign in first" };
+  if ((err as { code?: string }).code === "provider_error") {
+    const e = err as Error & { provider?: string };
+    return { status: 502, code: "provider_error", message: e.message.slice(0, 400), extra: { provider: e.provider ?? "duffel" } };
+  }
+  console.error("chat route failed", { error: err });
+  return { status: 500, code: "internal", message: err instanceof Error ? err.message : String(err) };
+}
+
+function errorResponse(err: unknown): Response {
+  const e = classify(err);
+  return typedError(e.status, e.code, e.message, e.extra);
+}
+
 export async function POST(req: Request): Promise<Response> {
   try {
-    const { user } = await requireUser(req);
     const parsed = bodySchema.safeParse(await req.json().catch(() => ({})));
     if (!parsed.success) return typedError(400, "bad_request", parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
-    const { text, persona: usePersona, card } = parsed.data;
-    const { ctx } = await engineForUser(req);
+    const { user, client } = await requireUser(req);
+    const { session_id, text, persona, card } = parsed.data;
 
-    // ── step 1: PARSE (LLM) — or the T1 persona's pre-set intent (no typing) ──
-    let intent;
-    if (usePersona && !text) {
-      const p = ctx.persona;
-      if (!p) return typedError(400, "no_persona", "no hay persona de prueba configurada");
-      const start = isoDay(new Date());
-      const end = isoDay(new Date(Date.now() + (p.route.window_days ?? 90) * 24 * 3_600_000));
-      intent = {
-        origin: p.route.origin,
-        destination: p.route.destination,
-        window: { start, end },
-        depart_date: null,
-        flexibility: "medium",
-        pax: p.pax,
-        cabin: p.route.cabin ?? "business",
-        mode: "plan",
-        missing: [],
-      };
-    } else {
-      try {
-        intent = await parseIntent(text ?? "");
-      } catch (err) {
-        if (err instanceof UnparsedIntent) {
-          // ask for the fields — never guess (F12 failure path)
-          return Response.json({
-            type: "unparsed_intent",
-            missing: err.missing,
-            explanation: "¿Desde dónde, adónde y qué fechas? Con eso te saco el cálculo — no adivino rutas.",
-          });
-        }
-        throw err;
-      }
-    }
+    if (persona && !text) return Response.json(await personaTurn(await engineForActor(user, client), card ?? null));
+    if (!text) return typedError(400, "bad_request", "text: required");
 
-    // ── step 4 card gate: pax confirmed upstream; card asked here (D19) ───────
-    const cardToUse = card ?? null;
+    // Answer-only turns never touch the engine, so its context is built on first use.
+    let ctxPromise: Promise<EngineContext> | null = null;
+    const engine = () => (ctxPromise ??= engineForActor(user, client));
 
-    // ── steps 2–5: COMPUTE (code only) ────────────────────────────────────────
-    let payload: Record<string, unknown>;
-    let computedType: "runway" | "book_now";
-    if (intent.mode === "book_now" && intent.depart_date) {
-      computedType = "book_now";
-      payload = (await bookNowCompare(ctx, {
-        origin: intent.origin!,
-        destination: intent.destination!,
-        depart_date: intent.depart_date,
-        cabin: intent.cabin ?? "business",
-        pax: intent.pax ?? 1,
-        card: cardToUse,
-      })) as unknown as Record<string, unknown>;
-    } else {
-      computedType = "runway";
-      payload = (await runwayCompute(ctx, {
-        origin: intent.origin!,
-        destination: intent.destination!,
-        window: intent.window ?? { start: isoDay(new Date()), end: isoDay(new Date(Date.now() + 90 * 24 * 3_600_000)) },
-        cabin: intent.cabin ?? "business",
-        pax: intent.pax ?? 1,
-        card: cardToUse,
-      })) as unknown as Record<string, unknown>;
-    }
-    payload = { ...payload, intent_confirm: { origin: intent.origin, destination: intent.destination, window: intent.window ?? intent.depart_date, pax: intent.pax, cabin: intent.cabin, mode: intent.mode }, card_gate: cardToUse ? null : "¿Qué tarjeta va a financiar el canje (p. ej. AMEX_ES o REVOLUT)? Sin carta no hay valor (D19)." };
+    const service = serviceClient();
+    const session = await openSession(service, user.id, session_id);
+    const history = await recentMessages(service, session.id, HISTORY_FOR_MODEL);
+    await appendMessage(service, { session_id: session.id, user_id: user.id, role: "user", content: text });
 
-    // ── step 6: EXPLAIN (LLM quotes computed numbers; local fallback keeps it honest) ──
-    let explanation: string;
-    let explained_by: "grok" | "local_fallback" = "grok";
+    let outcome;
     try {
-      explanation = await explain(payload);
-      if (!explanation?.trim()) throw new Error("empty explanation");
-    } catch {
-      explained_by = "local_fallback";
-      explanation = summaryFromPayload(payload, computedType);
+      outcome = await runChatTurn(
+        {
+          userId: user.id,
+          today: isoDay(new Date()),
+          model: chatTurn,
+          runway: async (input) => runwayCompute(await engine(), input),
+          bookNow: async (input) => bookNowCompare(await engine(), input),
+          explain: explainFacts,
+          save: (row) => insertItinerary(service, row, "chat"),
+        },
+        { slots: session.slots, history, text },
+      );
+    } catch (err) {
+      const failure = classify(err);
+      const note = "I could not finish that just now. Your details are kept — send the message again to retry.";
+      try {
+        await appendMessage(service, { session_id: session.id, user_id: user.id, role: "assistant", content: note });
+      } catch (noteError) {
+        console.error("chat failure note not stored", { sessionId: session.id, error: noteError });
+      }
+      return Response.json(
+        { error: { code: failure.code, message: failure.message, ...failure.extra }, session_id: session.id, reply: note },
+        { status: failure.status },
+      );
     }
-    return Response.json({ type: computedType, payload, explanation, explained_by, is_test_persona: usePersona === true });
+
+    await Promise.all([
+      appendMessage(service, {
+        session_id: session.id,
+        user_id: user.id,
+        role: "assistant",
+        content: outcome.reply,
+        payload: outcome.payload as Json | null,
+        itinerary_id: outcome.itinerary_id,
+      }),
+      saveSessionState(service, { id: session.id, userId: user.id, slots: outcome.slots, title: session.title ?? text.slice(0, 80) }),
+    ]);
+
+    return Response.json({
+      session_id: session.id,
+      type: outcome.kind,
+      reply: outcome.reply,
+      missing: outcome.missing,
+      slots: outcome.slots,
+      payload: outcome.payload,
+      itinerary_id: outcome.itinerary_id,
+      plan_url: outcome.plan_url,
+      explained_by: outcome.explained_by,
+    });
   } catch (err) {
-    if ((err as { status?: number }).status === 401) return typedError(401, "unauthorized", "sign in first");
-    if ((err as { code?: string }).code === "provider_error") {
-      const e = err as Error & { provider?: string };
-      return typedError(502, "provider_error", e.message.slice(0, 400), { provider: e.provider ?? "duffel" });
-    }
-    return typedError(500, "internal", err instanceof Error ? err.message : String(err));
+    return errorResponse(err);
   }
 }
 
-/** Deterministic Spanish fallback quoting ONLY payload numbers (never computed). */
-function summaryFromPayload(payload: Record<string, unknown>, type: "runway" | "book_now"): string {
-  if (type === "book_now") {
-    const v = payload.verdict ?? "insufficient_data";
-    const cash = (payload.cash ?? null) as { amount?: number; currency?: string; badge?: string } | null;
-    const award = (payload.award ?? null) as { miles?: number } | null;
-    const reason = payload.insufficient_reason ? ` Sin cálculo: ${String(payload.insufficient_reason).slice(0, 240)}` : "";
-    if (v === "insufficient_data") {
-      return `No puedo darte un veredicto fiable todavía.${reason}`;
+export async function GET(req: Request): Promise<Response> {
+  try {
+    const { client } = await requireUser(req);
+    const sessionId = new URL(req.url).searchParams.get("session_id");
+    if (!sessionId) return Response.json({ sessions: await listSessions(client, SESSION_LIST_LIMIT) });
+    if (!z.string().uuid().safeParse(sessionId).success) return typedError(400, "bad_request", "session_id must be a uuid");
+    return Response.json(await sessionThread(client, sessionId));
+  } catch (err) {
+    return errorResponse(err);
+  }
+}
+
+export async function DELETE(req: Request): Promise<Response> {
+  try {
+    const { client, user } = await requireUser(req);
+    const sessionId = new URL(req.url).searchParams.get("session_id");
+    if (!sessionId || !z.string().uuid().safeParse(sessionId).success) return typedError(400, "bad_request", "session_id must be a uuid");
+    const { error } = await client.from("chat_sessions").delete().eq("id", sessionId).eq("user_id", user.id);
+    if (error) {
+      console.error("chat session delete failed", { sessionId, error: error.message });
+      return typedError(400, "chat_delete", error.message);
     }
-    const cashTxt = cash?.amount != null ? ` El billete sale por ${cash.amount} ${cash.currency} (${cash.badge}).` : "";
-    const milesTxt = award?.miles != null ? ` El canje son ${award.miles} millas + tasas.` : "";
-    return `Veredicto: ${String(v).replace("_", " ")}. ${cashTxt} ${milesTxt} El desglose completo está en la tarjeta.${reason}`;
+    return Response.json({ ok: true });
+  } catch (err) {
+    return errorResponse(err);
   }
-  const cands = (payload.candidates ?? []) as Array<{ depart_date: string; cash?: { amount: number; currency: string } }>;
-  if (cands.length === 0) {
-    return `No hay tarifas en la ventana todavía. Prueba a acercar las fechas o revisa la ruta.`;
-  }
-  const first = cands[0];
-  return `He encontrado ${cands.length} fechas candidatas. La más barata sale por ${first.cash?.amount ?? "?"} ${first.cash?.currency ?? ""} el ${first.depart_date} (${String((first.cash as { badge?: string })?.badge ?? "estimación")}). El desglose y la proyección en la tarjeta.`;
 }
