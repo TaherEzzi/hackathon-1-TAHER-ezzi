@@ -1,1 +1,3 @@
-../web/theme-boot.mjs
+import { bootTheme } from "./theme.js";
+
+bootTheme();

@@ -1,1 +1,976 @@
-../web/trip-dossier.html
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>Trip Planner — A Una Milla</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Outfit:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="/vendor/tailwind.min.js"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"silver-bright":"#e6e9ed","silver":"#c3c8cf","silver-dim":"#8f959e","on-silver":"#1a222e","on-primary-fixed-variant":"#31476e","surface-bright":"#fff9ee","inverse-surface":"#33302a","quiet":"#5E7094","on-secondary-fixed":"#001a40","on-tertiary":"#ffffff","on-secondary-container":"#2f4e84","inverse-on-surface":"#f6f0e6","on-surface":"#1d1b16","surface-variant":"#e8e2d8","on-tertiary-fixed":"#14181c","on-tertiary-fixed-variant":"#14181c","line":"rgba(21, 44, 82, 0.16)","background":"#fff9ee","tertiary":"#3a3f46","outline-variant":"#c4c6cf","primary-fixed-dim":"#b1c7f5","on-primary-fixed":"#001a40","outline":"#74777f","surface-tint":"#495e87","on-surface-variant":"#44474e","primary-container":"#152c52","surface-container-high":"#ede7dd","surface-container":"#f3ede3","tertiary-fixed":"#dfe3e8","secondary-container":"#a3c1ff","secondary":"#3f5e95","surface-container-lowest":"#ffffff","secondary-fixed-dim":"#acc7ff","error-container":"#ffdad6","surface-container-highest":"#e8e2d8","secondary-fixed":"#d7e2ff","error":"#ba1a1a","on-background":"#1d1b16","on-secondary":"#ffffff","on-error":"#ffffff","surface-dim":"#dfd9d0","on-error-container":"#93000a","on-primary":"#ffffff","surface-container-low":"#f9f3e9","primary":"#00173a","primary-fixed":"#d7e2ff","inverse-primary":"#b1c7f5","tertiary-container":"#565d66","tertiary-fixed-dim":"#b7bdc6","on-secondary-fixed-variant":"#26467b","on-tertiary-container":"#ea6f47","on-primary-container":"#7f94c0","surface":"#FBF6EE"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter":"1.5rem","space-xl":"4rem","margin":"3rem","space-lg":"2rem","margin-mobile":"0.75rem","space-md":"1rem","space-sm":"0.5rem","space-xs":"0.25rem"},"fontFamily":{"figure-lg":["IBM Plex Mono"],"display-lg-mobile":["Bodoni Moda"],"figure-md":["IBM Plex Mono"],"display-lg":["Bodoni Moda"],"body-lg":["Outfit"],"label-sm":["Outfit"],"headline-lg":["Bodoni Moda"],"headline-sm":["Bodoni Moda"],"label-md":["Outfit"],"headline-lg-mobile":["Bodoni Moda"],"figure-sm":["IBM Plex Mono"],"body-sm":["Outfit"]},"fontSize":{"figure-lg":["24px",{"lineHeight":"1.2","fontWeight":"500"}],"display-lg-mobile":["48px",{"lineHeight":"0.95","letterSpacing":"-0.025em","fontWeight":"500"}],"figure-md":["16px",{"lineHeight":"1.3","fontWeight":"500"}],"display-lg":["92px",{"lineHeight":"0.88","letterSpacing":"-0.035em","fontWeight":"500"}],"body-lg":["18px",{"lineHeight":"1.5","fontWeight":"300"}],"label-sm":["10px",{"lineHeight":"1.0","letterSpacing":"0.16em","fontWeight":"400"}],"headline-lg":["56px",{"lineHeight":"0.92","letterSpacing":"-0.03em","fontWeight":"500"}],"headline-sm":["28px",{"lineHeight":"1.1","letterSpacing":"-0.015em","fontWeight":"500"}],"label-md":["12px",{"lineHeight":"1.0","letterSpacing":"0.16em","fontWeight":"400"}],"headline-lg-mobile":["36px",{"lineHeight":"1.0","letterSpacing":"-0.02em","fontWeight":"500"}],"figure-sm":["13px",{"lineHeight":"1.2","fontWeight":"400"}],"body-sm":["15px",{"lineHeight":"1.4","fontWeight":"300"}]}}}};</script><link href="theme.css" rel="stylesheet"/><script>try{if(localStorage.getItem("aum-theme")==="dark")document.documentElement.setAttribute("data-theme","dark");}catch(error){console.error("theme preference unreadable",error);}</script></head><body class="bg-surface font-body-sm text-body-sm text-on-surface antialiased selection:bg-primary-container selection:text-surface"><header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-24 max-w-[1180px] mx-auto px-margin-mobile md:px-margin flex items-center justify-between"><div class="flex items-center gap-space-lg"><a aria-label="A Una Milla — home" class="site-logo group flex shrink-0 items-center" data-path="the-house-overview" href="the-house.html"><img alt="" class="site-logo__mark site-logo__mark--light" aria-hidden="true" decoding="async" fetchpriority="high" height="1254" src="/images/logo-a-una-milla-light.png" width="1254"/><img alt="" aria-hidden="true" class="site-logo__mark site-logo__mark--dark" decoding="async" height="1024" loading="lazy" src="/images/logo-a-una-milla-dark.png" width="1024"/></a></div><nav class="hidden lg:flex items-center gap-space-lg" data-active-classes="text-primary font-medium underline underline-offset-8 decoration-1 decoration-primary" aria-label="Primary"><a class="font-label-md text-label-md uppercase tracking-[0.16em] text-on-surface-variant hover:text-on-surface transition-colors py-2" data-path="the-house-overview" href="the-house.html">01 The House</a><a aria-current="page" class="uppercase tracking-[0.16em] transition-colors py-2 text-primary font-medium underline underline-offset-8 decoration-1 decoration-primary" data-path="trip-dossier-planner" href="trip-dossier.html">02 Trip Planner</a><a class="font-label-md text-label-md uppercase tracking-[0.16em] text-on-surface-variant hover:text-on-surface transition-colors py-2" data-path="sovereign-roadmap" href="roadmap.html">03 Roadmap</a></nav><div class="flex items-center gap-space-md"><div class="theme-switch" role="group" aria-label="Color theme"><button type="button" data-theme-choice="light" aria-pressed="true">Light</button><button type="button" data-theme-choice="dark" aria-pressed="false">Dark</button></div><div id="auth-profile-slot" class="w-8 h-8 rounded-full bg-primary flex items-center justify-center" title="Account"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-24 bg-surface min-h-[calc(100vh-140px)]"><div class="max-w-[1180px] mx-auto px-margin-mobile md:px-margin py-space-lg"><div class="flex flex-col w-full">
+<div class="flex flex-col gap-space-lg w-full max-w-[880px] mx-auto">
+
+<!-- Page header -->
+<div class="flex flex-col max-w-2xl">
+<span class="font-label-md text-label-md uppercase tracking-[0.2em] text-secondary font-medium">Trip planner</span>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">Your plan, in three screens.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-space-xs">Tell us what you have and spend, where you want to go, and when — then we calculate everything.</p>
+</div>
+
+<!-- Step indicator -->
+<div class="grid grid-cols-3 gap-space-sm" id="stepper">
+<button type="button" class="step-tab cursor-pointer text-left bg-primary border-primary px-space-sm py-2 flex items-center gap-space-sm text-surface transition-colors" data-step="1">
+<span class="font-figure-md text-figure-md">1</span>
+<span class="hidden sm:inline font-label-sm text-label-sm uppercase tracking-widest">Your information</span>
+</button>
+<button type="button" class="step-tab cursor-pointer text-left bg-surface border-line px-space-sm py-2 flex items-center gap-space-sm text-primary transition-colors" data-step="2">
+<span class="font-figure-md text-figure-md">2</span>
+<span class="hidden sm:inline font-label-sm text-label-sm uppercase tracking-widest">Your trip</span>
+</button>
+<button type="button" class="step-tab cursor-pointer text-left bg-surface border-line px-space-sm py-2 flex items-center gap-space-sm text-primary transition-colors" data-step="3">
+<span class="font-figure-md text-figure-md">3</span>
+<span class="hidden sm:inline font-label-sm text-label-sm uppercase tracking-widest">Your plan</span>
+</button>
+</div>
+
+<div class="bg-surface-container-low p-space-md md:p-space-lg shadow-sm flex flex-col gap-space-md">
+
+<!-- ================================================== STEP 1: YOUR INFORMATION -->
+<section id="step-1" class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between border-b border-line pb-space-sm">
+<h2 class="font-headline-sm text-headline-sm text-primary">What do you have?</h2>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-quiet">Step 1 of 3</span>
+</div>
+
+<!-- Cards -->
+<div class="flex flex-col gap-space-sm">
+<label class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant">Cards you use</label>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Select every card you actually hold. Each purchase is assigned only to one of those cards.</p>
+<div class="flex flex-wrap gap-space-sm" id="card-options">
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="amex_gold" data-code="AMEX_ES">Amex Gold</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="amex_green" data-code="AMEX_ES">Amex Green</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="amex_business_gold" data-code="AMEX_ES">Amex Business Gold</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="amex_platinum" data-code="AMEX_ES">Amex Platinum</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="amex_business_platinum" data-code="AMEX_ES">Amex Business Platinum</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="amex_centurion" data-code="AMEX_ES">Amex Centurion</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="revolut_premium" data-code="REVOLUT">Revolut Premium</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="revolut_metal" data-code="REVOLUT">Revolut Metal</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="revolut_ultra" data-code="REVOLUT">Revolut Ultra</button>
+</div>
+<div id="card-fields" class="flex flex-col gap-space-sm"></div>
+</div>
+
+<!-- Bank accounts -->
+<div class="flex flex-col gap-space-sm">
+<label class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant">Bank accounts</label>
+<div class="flex flex-wrap gap-space-sm" id="bank-options">
+<button type="button" class="bank-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-bank="Revolut">Revolut</button>
+<button type="button" class="bank-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-bank="Santander">Santander</button>
+<button type="button" class="bank-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-bank="BBVA">BBVA</button>
+<button type="button" class="bank-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-bank="CaixaBank">CaixaBank</button>
+<button type="button" class="bank-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-bank="ING">ING</button>
+<button type="button" class="bank-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-bank="Another bank">Another bank</button>
+</div>
+<div id="bank-other" class="hidden flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant" for="other-bank-input">Bank name</label>
+<input class="w-full max-w-sm h-[46px] bg-surface border border-line px-space-md text-primary font-body-sm focus:outline-none focus:border-primary" id="other-bank-input" type="text" placeholder="Type your bank"/>
+</div>
+</div>
+
+<!-- Monthly spending: total + breakdown -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between gap-3 border-y border-line py-space-sm">
+<span class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant">What you spend every month</span>
+<div class="flex items-center gap-2">
+<div class="money-stepper flex items-stretch border border-line h-[56px] w-[220px]" data-step="50">
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease monthly spend">−</button>
+<input id="spend-total-input" class="mstep-val h-full flex-1 min-w-0 text-center font-figure-lg text-figure-lg text-primary bg-transparent focus:outline-none focus:bg-primary/5" type="number" inputmode="numeric" min="0" step="50" value="3000" aria-label="Monthly spend total"/>
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase monthly spend">+</button>
+</div>
+<span class="font-label-md text-label-md uppercase tracking-wider text-quiet whitespace-nowrap">€ / month</span>
+</div>
+</div>
+<div class="flex items-baseline justify-between border-b border-line pb-space-xs">
+<p class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant">Where does it go each month?</p>
+<p class="font-label-sm text-label-sm uppercase tracking-widest text-quiet">Tap or hold − / + — or type the amount</p>
+</div>
+
+<div class="flex items-center justify-between gap-3 border-b border-line py-space-sm">
+<span class="font-body-sm text-body-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">local_gas_station</span>Fuel</span>
+<div class="money-stepper flex items-stretch border border-line h-[52px] w-[188px]" data-step="10">
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Fuel amount">−</button>
+<input class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5 spend-cat" data-cat="fuel" type="number" inputmode="numeric" min="0" step="10" placeholder="0" aria-label="Fuel spend per month"/>
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Fuel amount">+</button>
+</div>
+</div>
+<div class="flex items-center justify-between gap-3 border-b border-line py-space-sm">
+<span class="font-body-sm text-body-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">shopping_basket</span>Groceries</span>
+<div class="money-stepper flex items-stretch border border-line h-[52px] w-[188px]" data-step="10">
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Groceries amount">−</button>
+<input class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5 spend-cat" data-cat="groceries" type="number" inputmode="numeric" min="0" step="10" placeholder="0" aria-label="Groceries spend per month"/>
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Groceries amount">+</button>
+</div>
+</div>
+<div class="flex items-center justify-between gap-3 border-b border-line py-space-sm">
+<span class="font-body-sm text-body-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">restaurant</span>Dining &amp; dinner</span>
+<div class="money-stepper flex items-stretch border border-line h-[52px] w-[188px]" data-step="10">
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Dining & dinner amount">−</button>
+<input class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5 spend-cat" data-cat="dining" type="number" inputmode="numeric" min="0" step="10" placeholder="0" aria-label="Dining & dinner spend per month"/>
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Dining & dinner amount">+</button>
+</div>
+</div>
+<div class="flex items-center justify-between gap-3 border-b border-line py-space-sm">
+<span class="font-body-sm text-body-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">local_mall</span>Shopping</span>
+<div class="money-stepper flex items-stretch border border-line h-[52px] w-[188px]" data-step="10">
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Shopping amount">−</button>
+<input class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5 spend-cat" data-cat="shopping" type="number" inputmode="numeric" min="0" step="10" placeholder="0" aria-label="Shopping spend per month"/>
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Shopping amount">+</button>
+</div>
+</div>
+<div class="flex items-center justify-between gap-3 border-b border-line py-space-sm">
+<span class="font-body-sm text-body-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">celebration</span>Leisure</span>
+<div class="money-stepper flex items-stretch border border-line h-[52px] w-[188px]" data-step="10">
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Leisure amount">−</button>
+<input class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5 spend-cat" data-cat="leisure" type="number" inputmode="numeric" min="0" step="10" placeholder="0" aria-label="Leisure spend per month"/>
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Leisure amount">+</button>
+</div>
+</div>
+<div class="flex items-center justify-between gap-3 border-b border-line py-space-sm">
+<span class="font-body-sm text-body-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">directions_transit</span>Transport</span>
+<div class="money-stepper flex items-stretch border border-line h-[52px] w-[188px]" data-step="10">
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Transport amount">−</button>
+<input class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5 spend-cat" data-cat="transport" type="number" inputmode="numeric" min="0" step="10" placeholder="0" aria-label="Transport spend per month"/>
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Transport amount">+</button>
+</div>
+</div>
+<div class="flex items-center justify-between gap-3 border-b border-line py-space-sm">
+<span class="font-body-sm text-body-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">flight_takeoff</span>Travel</span>
+<div class="money-stepper flex items-stretch border border-line h-[52px] w-[188px]" data-step="10">
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease Travel amount">−</button>
+<input class="mstep-val h-full flex-1 min-w-0 text-center font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5 spend-cat" data-cat="travel" type="number" inputmode="numeric" min="0" step="10" placeholder="0" aria-label="Travel spend per month"/>
+<button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase Travel amount">+</button>
+</div>
+</div>
+
+<div class="flex items-center justify-between pt-space-sm" id="breakdown-sum-box">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-quiet">Accounted for</span>
+<span class="font-figure-md text-figure-md text-primary" id="breakdown-sum">€0 of €3,000</span>
+</div>
+<div class="border-b-2 border-primary mt-[-1px]"></div>
+</div>
+
+<!-- Major planned purchases -->
+<div class="flex flex-col gap-space-sm">
+<label class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant">Big purchases in the next 12 months (optional)</label>
+<div class="flex flex-col gap-space-sm" id="purchase-rows"></div>
+<button type="button" class="self-start h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-primary hover:border-primary transition-colors flex items-center gap-2" id="add-purchase">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Add a purchase</span>
+</button>
+</div>
+
+<div class="flex items-center justify-end pt-space-sm border-t border-line">
+<button class="inline-flex items-center justify-center gap-2 h-[46px] px-space-lg bg-primary-container text-surface-bright font-label-md text-label-md uppercase tracking-[0.18em] transition-all hover:bg-primary shadow-sm" id="to-step-2">
+<span>Continue</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</section>
+
+<!-- ================================================== STEP 2: YOUR TRIP -->
+<section id="step-2" class="hidden flex flex-col gap-space-md">
+<div class="flex items-center justify-between border-b border-line pb-space-sm">
+<h2 class="font-headline-sm text-headline-sm text-primary">Your trip</h2>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-quiet">Step 2 of 3</span>
+</div>
+
+<!-- Route -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant" for="from-city">From</label>
+<input class="w-full h-[52px] bg-surface border border-line px-space-md text-primary font-body-sm focus:outline-none focus:border-primary city-input" list="cities-datalist" id="from-city" type="text" placeholder="City — e.g. Madrid (MAD)"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant" for="to-city">To</label>
+<input class="w-full h-[52px] bg-surface border border-line px-space-md text-primary font-body-sm focus:outline-none focus:border-primary city-input" list="cities-datalist" id="to-city" type="text" placeholder="City — e.g. Johannesburg (JNB)"/>
+</div>
+</div>
+
+<!-- Travellers + cabin -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="flex items-center justify-between bg-surface border border-line p-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">How many people are traveling?</span>
+<div class="flex items-center gap-space-sm">
+<button type="button" class="w-8 h-8 border border-line text-primary flex items-center justify-center hover:border-primary transition-colors" id="pax-minus">−</button>
+<span class="font-figure-lg text-figure-lg text-primary w-8 text-center" id="pax-count">1</span>
+<button type="button" class="w-8 h-8 border border-line text-primary flex items-center justify-center hover:border-primary transition-colors" id="pax-plus">+</button>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Cabin</label>
+<div class="flex gap-space-sm" id="cabin-options">
+<button type="button" class="cabin-pill h-[52px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-cabin="economy">Economy</button>
+<button type="button" class="cabin-pill h-[52px] px-space-md bg-primary border border-primary font-label-sm text-label-sm uppercase tracking-wider text-on-primary transition-colors" data-cabin="business">Business</button>
+<button type="button" class="cabin-pill h-[52px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-cabin="first">First</button>
+</div>
+</div>
+</div>
+
+<!-- Timing -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant" for="travel-date">When do you want to travel?</label>
+<input class="w-full h-[52px] bg-surface border border-line px-space-md text-primary font-figure-md focus:outline-none focus:border-primary" id="travel-date" type="date"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">When do you want to book?</label>
+<div class="flex flex-wrap gap-space-sm" id="lead-options">
+<button type="button" class="lead-pill h-[52px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-lead="15">15 days before</button>
+<button type="button" class="lead-pill h-[52px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-lead="30">1 month before</button>
+<button type="button" class="lead-pill h-[52px] px-space-md bg-primary border border-primary font-label-sm text-label-sm uppercase tracking-wider text-on-primary transition-colors" data-lead="60">2 months before</button>
+<button type="button" class="lead-pill h-[52px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-lead="90">3 months before</button>
+</div>
+<span class="font-figure-sm text-figure-sm text-quiet" id="lead-note">You would book around {book-date}.</span>
+</div>
+</div>
+
+<!-- Calculate: nothing before this is shown -->
+<div class="flex items-center justify-between pt-space-sm border-t border-line">
+<button class="inline-flex items-center justify-center gap-2 h-[46px] px-space-lg bg-transparent border border-primary text-primary font-label-md text-label-md uppercase tracking-[0.18em] transition-all hover:bg-surface-container" id="back-to-1">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span>Back</span>
+</button>
+<button class="inline-flex items-center justify-center gap-2 h-[56px] px-space-xl bg-primary text-on-primary font-label-md text-label-md uppercase tracking-[0.2em] transition-all hover:bg-primary-container shadow-md disabled:opacity-40 disabled:pointer-events-none" id="calculate-btn" disabled>
+<span class="material-symbols-outlined text-[20px]">calculate</span>
+<span>Calculate my plan</span>
+</button>
+</div>
+</section>
+
+<!-- ================================================== STEP 3: YOUR PLAN (only after Calculate) -->
+<section id="step-3" class="hidden flex flex-col gap-space-md">
+<div id="calc-loading" class="flex flex-col items-center justify-center gap-space-md py-space-xl">
+<span class="material-symbols-outlined text-[40px] text-primary animate-pulse">hourglass_top</span>
+<span class="font-body-lg text-body-lg text-on-surface-variant" id="calc-loading-step">Checking cash prices with Duffel…</span>
+</div>
+<div id="calc-error" class="hidden flex-col gap-space-sm bg-error-container p-space-lg">
+<h3 class="font-headline-sm text-headline-sm text-on-error-container" id="calc-error-title">We could not complete the calculation</h3>
+<p class="font-body-sm text-body-sm text-on-error-container" id="calc-error-text"></p>
+<div class="flex flex-wrap items-center gap-space-sm">
+<button class="inline-flex items-center justify-center gap-2 h-[46px] px-space-lg bg-on-error-container text-error-container font-label-md text-label-md uppercase tracking-[0.18em] transition-all hover:opacity-80" id="calc-fix">Back to step 1</button>
+<button class="inline-flex items-center justify-center gap-2 h-[46px] px-space-lg bg-transparent border border-on-error-container text-on-error-container font-label-md text-label-md uppercase tracking-[0.18em] transition-all hover:bg-on-error-container/10" id="calc-retry">Try again</button>
+<a class="hidden inline-flex items-center justify-center gap-2 h-[46px] px-space-lg bg-surface text-primary font-label-md text-label-md uppercase tracking-[0.18em]" href="/login" id="calc-login">Sign in</a>
+</div>
+<p class="font-label-sm text-label-sm uppercase tracking-widest text-on-error-container/70">You can also click step 1 or step 2 above to go back.</p>
+</div>
+<div id="calc-results" class="hidden flex-col gap-space-md">
+<!-- Verdict -->
+<div id="verdict-box" class="bg-primary text-on-primary p-space-md md:p-space-lg flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-primary-container">Verdict</span>
+<span class="font-figure-sm text-figure-sm text-on-primary-container" id="verdict-badge"></span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-on-primary" id="verdict-title">—</h3>
+<p class="font-body-lg text-body-lg text-on-primary font-light" id="verdict-sub">—</p>
+<p class="font-body-sm text-body-sm text-on-primary-container border-t border-on-primary/30 pt-space-sm" id="verdict-why"></p>
+</div>
+<!-- Timeline strip -->
+<div class="bg-surface border border-line p-space-md grid grid-cols-1 sm:grid-cols-3 gap-space-md">
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-quiet">Today</span>
+<span class="font-figure-md text-figure-md text-primary" id="tl-today">—</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-quiet">Book by</span>
+<span class="font-figure-md text-figure-md text-primary" id="tl-book">—</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-quiet">Travel</span>
+<span class="font-figure-md text-figure-md text-primary" id="tl-travel">—</span>
+</div>
+</div>
+<!-- Points table -->
+<div class="bg-surface border border-line p-space-md flex flex-col gap-space-sm">
+<h3 class="font-headline-sm text-headline-sm text-primary">Your points, month by month</h3>
+<div id="routing-lines" class="flex flex-col gap-1"></div>
+<div class="overflow-x-auto">
+<table class="w-full min-w-[520px] font-figure-sm text-figure-sm" id="points-table">
+<thead class="text-quiet uppercase tracking-wider" style="font-family:Outfit,sans-serif;font-size:10px;letter-spacing:0.16em;">
+<tr>
+<th class="text-left py-2 border-b border-line font-normal">Month</th>
+<th class="text-right py-2 border-b border-line font-normal">Added</th>
+<th class="text-right py-2 border-b border-line font-normal">Balance (low–high)</th>
+</tr>
+</thead>
+<tbody id="points-table-body"></tbody>
+</table>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant" id="points-table-note"></p>
+</div>
+<!-- Price check table -->
+<div class="bg-surface border border-line p-space-md flex flex-col gap-space-sm">
+<h3 class="font-headline-sm text-headline-sm text-primary">Price check for this route</h3>
+<div class="overflow-x-auto">
+<table class="w-full min-w-[520px] font-figure-sm text-figure-sm" id="price-table">
+<thead class="text-quiet uppercase tracking-wider" style="font-family:Outfit,sans-serif;font-size:10px;letter-spacing:0.16em;">
+<tr>
+<th class="text-left py-2 border-b border-line font-normal">Date</th>
+<th class="text-right py-2 border-b border-line font-normal">Cash price</th>
+<th class="text-right py-2 border-b border-line font-normal">With points</th>
+<th class="text-right py-2 border-b border-line font-normal">You save</th>
+</tr>
+</thead>
+<tbody id="price-table-body"></tbody>
+</table>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant" id="price-table-note"></p>
+</div>
+<div class="flex items-center justify-between pt-space-sm border-t border-line">
+<button class="inline-flex items-center justify-center gap-2 h-[46px] px-space-lg bg-transparent border border-primary text-primary font-label-md text-label-md uppercase tracking-[0.18em] transition-all hover:bg-surface-container" id="back-to-2">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span>Back</span>
+</button>
+<span class="font-figure-sm text-figure-sm text-quiet" id="results-attribution"></span>
+</div>
+</div>
+</section>
+
+</div>
+</div>
+
+</div>
+
+<!-- City suggestion list -->
+<datalist id="cities-datalist">
+<option value="Madrid (MAD)"></option>
+<option value="Barcelona (BCN)"></option>
+<option value="Lisbon (LIS)"></option>
+<option value="London (LHR)"></option>
+<option value="Paris (CDG)"></option>
+<option value="Amsterdam (AMS)"></option>
+<option value="Frankfurt (FRA)"></option>
+<option value="Zurich (ZRH)"></option>
+<option value="Rome (FCO)"></option>
+<option value="Milan (MXP)"></option>
+<option value="Dublin (DUB)"></option>
+<option value="Vienna (VIE)"></option>
+<option value="Copenhagen (CPH)"></option>
+<option value="Stockholm (ARN)"></option>
+<option value="Helsinki (HEL)"></option>
+<option value="Warsaw (WAW)"></option>
+<option value="Athens (ATH)"></option>
+<option value="Istanbul (IST)"></option>
+<option value="Moscow (SVO)"></option>
+<option value="Cairo (CAI)"></option>
+<option value="Casablanca (CMN)"></option>
+<option value="Tel Aviv (TLV)"></option>
+<option value="Dubai (DXB)"></option>
+<option value="Doha (DOH)"></option>
+<option value="New York (JFK)"></option>
+<option value="Boston (BOS)"></option>
+<option value="Chicago (ORD)"></option>
+<option value="Washington (IAD)"></option>
+<option value="Miami (MIA)"></option>
+<option value="Los Angeles (LAX)"></option>
+<option value="San Francisco (SFO)"></option>
+<option value="Toronto (YYZ)"></option>
+<option value="Mexico City (MEX)"></option>
+<option value="Bogotá (BOG)"></option>
+<option value="Lima (LIM)"></option>
+<option value="Buenos Aires (EZE)"></option>
+<option value="Santiago (SCL)"></option>
+<option value="São Paulo (GRU)"></option>
+<option value="Rio de Janeiro (GIG)"></option>
+<option value="Johannesburg (JNB)"></option>
+<option value="Cape Town (CPT)"></option>
+<option value="Bangkok (BKK)"></option>
+<option value="Singapore (SIN)"></option>
+<option value="Kuala Lumpur (KUL)"></option>
+<option value="Hong Kong (HKG)"></option>
+<option value="Tokyo (HND)"></option>
+<option value="Seoul (ICN)"></option>
+<option value="Beijing (PEK)"></option>
+<option value="Shanghai (PVG)"></option>
+<option value="Delhi (DEL)"></option>
+<option value="Sydney (SYD)"></option>
+<option value="Melbourne (MEL)"></option>
+<option value="Auckland (AKL)"></option>
+</datalist>
+
+<script type="application/json" id="card-rates">{"amex_gold":{"fuel":0.5,"groceries":0.2,"dining":0.5,"shopping":0.5,"leisure":0.5,"transport":0.5,"travel":1},"amex_green":{"fuel":0.5,"groceries":0.2,"dining":0.5,"shopping":0.5,"leisure":0.5,"transport":0.5,"travel":1},"amex_business_gold":{"fuel":0.5,"groceries":0.2,"dining":0.5,"shopping":0.5,"leisure":0.5,"transport":0.5,"travel":1},"amex_platinum":{"fuel":1,"groceries":1,"dining":1,"shopping":1,"leisure":1,"transport":1,"travel":1},"amex_business_platinum":{"fuel":1,"groceries":1,"dining":1,"shopping":1,"leisure":1,"transport":1,"travel":1},"amex_centurion":{"fuel":1.5,"groceries":1.5,"dining":1.5,"shopping":1.5,"leisure":1.5,"transport":1.5,"travel":1.5},"revolut_premium":{"fuel":0.25,"groceries":0.25,"dining":0.25,"shopping":0.25,"leisure":0.25,"transport":0.25,"travel":0.25},"revolut_metal":{"fuel":0.5,"groceries":0.5,"dining":0.5,"shopping":0.5,"leisure":0.5,"transport":0.5,"travel":0.5},"revolut_ultra":{"fuel":1,"groceries":1,"dining":1,"shopping":1,"leisure":1,"transport":1,"travel":1}}</script>
+<script>
+(function() {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const fmtEur = (n) => "€" + Math.round(n).toLocaleString();
+  const fmtCash = (n, cur) => (cur === "EUR" ? "€" : cur === "USD" ? "$" : cur + " ") + Math.round(n).toLocaleString();
+  const fmtPts = (n) => Math.round(n).toLocaleString();
+
+  /* stepper controls for money & points: tap or press-and-hold − / + to count
+   up and down; hairline dividers mark the click zones; direct typing in the
+   middle still works and the field starts empty so no zero ever sticks. */
+  function wireStepper(box, inp) {
+    const step = parseFloat(box.dataset.step) || 10;
+    inp = inp || box.querySelector(".mstep-val");
+    if (box.dataset.stepperReady) return;
+    box.dataset.stepperReady = "1";
+    const cur = () => { const v = parseFloat(inp.value); return Number.isFinite(v) ? v : 0; };
+    const set = (v) => { inp.value = String(Math.max(0, Math.round(v))); inp.dispatchEvent(new Event("input", { bubbles: true })); };
+    box.querySelectorAll(".mstep-btn").forEach(btn => {
+      const dir = btn.dataset.dir === "up" ? 1 : -1;
+      let hold = null;
+      const bump = () => set(cur() + dir * step);
+      const start = (e) => { e.preventDefault(); bump(); if (!hold) hold = setInterval(bump, 110); };
+      const stop = () => { if (hold) { clearInterval(hold); hold = null; } };
+      btn.addEventListener("mousedown", start);
+      btn.addEventListener("touchstart", start, { passive: false });
+      ["mouseup", "mouseleave", "touchend", "touchcancel"].forEach(ev => btn.addEventListener(ev, stop));
+    });
+    inp.addEventListener("focus", () => { if (inp.value !== "") inp.select(); });
+  }
+  function makeStepper({ step, aria, boxCls, valCls, value, placeholder, onChange }) {
+    const box = document.createElement("div");
+    box.className = "money-stepper flex items-stretch border border-line " + (boxCls || "");
+    box.dataset.step = String(step);
+    const down = document.createElement("button");
+    const up = document.createElement("button");
+    [[down, "down", "Decrease"], [up, "up", "Increase"]].forEach(([btn, dir, verb]) => {
+      btn.type = "button";
+      btn.className = "mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer";
+      btn.dataset.dir = dir;
+      btn.setAttribute("aria-label", verb + " " + aria);
+      btn.textContent = dir === "down" ? "−" : "+";
+    });
+    const inp = document.createElement("input");
+    inp.className = "mstep-val flex-1 min-w-0 text-center " + (valCls || "font-figure-md text-figure-md text-primary bg-transparent focus:outline-none");
+    inp.type = "number";
+    inp.setAttribute("inputmode", "numeric");
+    inp.min = "0";
+    inp.placeholder = placeholder || "0";
+    inp.setAttribute("aria-label", aria);
+    if (value !== undefined && value !== null) inp.value = String(value);
+    if (onChange) inp.addEventListener("input", () => onChange(parseFloat(inp.value) || 0));
+    box.append(down, inp, up);
+    wireStepper(box, inp);
+    return box;
+  }
+
+const state = {
+    step: 1,
+    cards: {},                  // name -> {code, earn, points}
+    banks: new Set(),
+    spendTotal: 3000,
+    purchases: [],              // {name, amount}
+    plan: "metal",
+    pax: 1,
+    cabin: "business",
+    travelDate: null,
+    lead: 60,
+    cardCode: null,
+    hasPlan: false, // flips on once the engine renders a plan; gates tab 3
+    spendBonuses: [],
+  };
+
+  /* ---------- Step navigation ---------- */
+  function showStep(n) {
+    state.step = n;
+    for (let i = 1; i <= 3; i++) {
+      $("step-" + i).classList.toggle("hidden", i !== n);
+      const tab = document.querySelector('.step-tab[data-step="' + i + '"]');
+      if (!tab) continue;
+      const on = i === n, done = i < n;
+      tab.classList.toggle("step-tab--on", on);
+      tab.classList.toggle("bg-primary", on || done);
+      tab.classList.toggle("text-on-primary", on || done);
+      tab.classList.toggle("border-primary", on || done);
+      tab.classList.toggle("bg-surface", !on && !done);
+      tab.classList.toggle("text-primary", !on && !done);
+      tab.classList.toggle("border-line", !on && !done);
+    }
+  }
+  $("to-step-2").addEventListener("click", () => { updateCardCode(); showStep(2); });
+  $("back-to-1").addEventListener("click", () => showStep(1));
+  $("back-to-2").addEventListener("click", () => showStep(2));
+
+  /* the step tabs themselves navigate back — you can always return to a
+     previous step; step 3 only opens once a plan has been calculated */
+  document.querySelectorAll(".step-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      const n = parseInt(tab.dataset.step, 10);
+      if (n === 3 && !state.hasPlan) return;
+      showStep(n);
+    });
+  });
+
+  function activePill(el, on) {
+    el.classList.toggle("bg-primary", on);
+    el.classList.toggle("text-on-primary", on);
+    el.classList.toggle("border-primary", on);
+    el.classList.toggle("bg-surface", !on);
+    el.classList.toggle("text-on-surface-variant", !on);
+    el.classList.toggle("border-line", !on);
+  }
+
+  /* ---------- Cards ---------- */
+  document.querySelectorAll(".card-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      const name = chip.getAttribute("data-card");
+      const on = state.cards[name] !== undefined;
+      if (on) { delete state.cards[name]; }
+      else {
+        state.cards[name] = {
+          code: chip.getAttribute("data-code"),
+          earn: parseFloat(chip.getAttribute("data-earn")) || 1,
+          points: 0,
+        };
+      }
+      activePill(chip, !on);
+      renderCardFields();
+    });
+  });
+
+  const CARD_LABEL = {
+    amex_gold: "Amex Gold", amex_green: "Amex Green", amex_business_gold: "Amex Business Gold",
+    amex_platinum: "Amex Platinum", amex_business_platinum: "Amex Business Platinum", amex_centurion: "Amex Centurion",
+    revolut_premium: "Revolut Premium", revolut_metal: "Revolut Metal", revolut_ultra: "Revolut Ultra",
+  };
+  function cardRates() {
+    try {
+      const parsed = JSON.parse($("card-rates").textContent || "");
+      if (!parsed || typeof parsed !== "object") throw new Error("card rate table was empty");
+      return parsed;
+    } catch (error) {
+      console.error("card rate table unreadable", error);
+      return null;
+    }
+  }
+  function renderCardFields() {
+    const box = $("card-fields");
+    box.innerHTML = "";
+    Object.keys(state.cards).forEach(name => {
+      const row = document.createElement("div");
+      row.className = "flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-surface border border-line p-space-sm";
+      row.innerHTML = '<div class="flex flex-col"><span class="font-label-sm text-label-sm uppercase tracking-widest text-primary">' + esc(CARD_LABEL[name] || name) + '</span>' +
+        '<span class="font-figure-sm text-figure-sm text-quiet">Points already on this card</span></div>';
+      row.appendChild(makeStepper({
+        step: 1000,
+        aria: "Points on " + (CARD_LABEL[name] || name),
+        boxCls: "w-[210px]",
+        valCls: "h-[48px] font-figure-lg text-figure-lg text-primary bg-transparent focus:outline-none focus:bg-primary/5",
+        value: state.cards[name].points || undefined,
+        placeholder: "0",
+        onChange: (v) => { state.cards[name].points = v; },
+      }));
+      box.appendChild(row);
+    });
+  }
+  function shoppingRate() {
+    const rates = cardRates();
+    if (!rates) return 0;
+    let best = 0;
+    Object.keys(state.cards).forEach(card => {
+      const rate = rates[card] && rates[card].shopping || 0;
+      if (rate > best) best = rate;
+    });
+    return best;
+  }
+  function collectSpend() {
+    const spend = {};
+    document.querySelectorAll(".spend-cat").forEach(inp => {
+      const amount = parseFloat(inp.value) || 0;
+      if (amount > 0) spend[inp.getAttribute("data-cat")] = amount;
+    });
+    return spend;
+  }
+  document.querySelectorAll(".bank-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      const b = chip.getAttribute("data-bank");
+      const on = state.banks.has(b);
+      if (on) state.banks.delete(b); else state.banks.add(b);
+      activePill(chip, !on);
+      const other = state.banks.has("Another bank");
+      $("bank-other").classList.toggle("hidden", !other);
+      $("bank-other").classList.toggle("flex", other);
+    });
+  });
+  document.querySelectorAll(".plan-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      state.plan = chip.getAttribute("data-plan");
+      document.querySelectorAll(".plan-chip").forEach(p => activePill(p, p === chip));
+      renderCardFields(); // refresh the earn mapping shown on the Revolut row
+    });
+  });
+
+  /* ---------- Spending ---------- */
+  $("spend-total-input").addEventListener("input", () => { state.spendTotal = parseFloat($("spend-total-input").value) || 0; updateBreakdown(); });
+  document.querySelectorAll(".spend-cat").forEach(inp => inp.addEventListener("input", updateBreakdown));
+  function updateBreakdown() {
+    let sum = 0;
+    document.querySelectorAll(".spend-cat").forEach(inp => { sum += parseFloat(inp.value) || 0; });
+    const total = state.spendTotal;
+    $("breakdown-sum").textContent = sum > total
+      ? fmtEur(sum) + " — over your " + fmtEur(total)
+      : fmtEur(sum) + " of " + fmtEur(total) + " set out";
+  }
+
+  /* ---------- Purchases ---------- */
+  $("add-purchase").addEventListener("click", () => {
+    const row = document.createElement("div");
+    row.className = "flex items-center gap-space-sm bg-surface border border-line p-space-sm";
+    const name = document.createElement("input");
+    name.className = "flex-1 h-[40px] bg-transparent font-body-sm text-primary focus:outline-none";
+    name.placeholder = "What is it? e.g. new laptop";
+    const amtBox = makeStepper({
+      step: 50,
+      aria: "Purchase amount",
+      boxCls: "w-[160px]",
+      valCls: "h-[40px] font-figure-md text-figure-md text-primary bg-transparent focus:outline-none focus:bg-primary/5",
+      placeholder: "0",
+    });
+    const rm = document.createElement("button");
+    rm.type = "button"; rm.className = "material-symbols-outlined text-[20px] text-quiet hover:text-primary transition-colors"; rm.textContent = "delete"; rm.title = "Remove";
+    rm.addEventListener("click", () => row.remove());
+    row.appendChild(name); row.appendChild(amtBox); row.appendChild(rm);
+    $("purchase-rows").appendChild(row);
+  });
+
+  /* ---------- Trip ---------- */
+  const CITY_CODE = { MAD: "madrid", BCN: "barcelona", LIS: "lisbon", LHR: "london", CDG: "paris", AMS: "amsterdam", FRA: "frankfurt", ZRH: "zurich", FCO: "rome", MXP: "milan", DUB: "dublin", VIE: "vienna", CPH: "copenhagen", ARN: "stockholm", HEL: "helsinki", WAW: "warsaw", ATH: "athens", IST: "istanbul", SVO: "moscow", CAI: "cairo", CMN: "casablanca", TLV: "tel aviv", DXB: "dubai", DOH: "doha", JFK: "new york", BOS: "boston", ORD: "chicago", IAD: "washington", MIA: "miami", LAX: "los angeles", SFO: "san francisco", YYZ: "toronto", MEX: "mexico city", BOG: "bogotá", LIM: "lima", EZE: "buenos aires", SCL: "santiago", GRU: "são paulo", GIG: "rio de janeiro", JNB: "johannesburg", CPT: "cape town", BKK: "bangkok", SIN: "singapore", KUL: "kuala lumpur", HKG: "hong kong", HND: "tokyo", NRT: "tokyo", ICN: "seoul", PEK: "beijing", PVG: "shanghai", DEL: "delhi", SYD: "sydney", MEL: "melbourne", AKL: "auckland" };
+  function cityToCode(text) {
+    if (!text) return null;
+    const m = String(text).toUpperCase().match(/\(([A-Z]{3})\)/);
+    if (m && CITY_CODE[m[1]]) return m[1];
+    const t = String(text).toLowerCase().trim();
+    for (const code of Object.keys(CITY_CODE)) { if (t.includes(CITY_CODE[code])) return code; }
+    return null;
+  }
+  [$("from-city"), $("to-city")].forEach(inp => inp.addEventListener("input", updateCalculateGate));
+
+  $("pax-minus").addEventListener("click", () => { state.pax = Math.max(1, state.pax - 1); $("pax-count").textContent = String(state.pax); });
+  $("pax-plus").addEventListener("click", () => { state.pax = Math.min(9, state.pax + 1); $("pax-count").textContent = String(state.pax); });
+
+  document.querySelectorAll(".cabin-pill").forEach(p => {
+    p.addEventListener("click", () => {
+      state.cabin = p.getAttribute("data-cabin");
+      document.querySelectorAll(".cabin-pill").forEach(x => activePill(x, x === p));
+    });
+  });
+  $("travel-date").addEventListener("change", () => { state.travelDate = $("travel-date").value || null; updateLeadNote(); updateCalculateGate(); });
+  document.querySelectorAll(".lead-pill").forEach(p => {
+    p.addEventListener("click", () => {
+      state.lead = parseInt(p.getAttribute("data-lead"), 10);
+      document.querySelectorAll(".lead-pill").forEach(x => activePill(x, x === p));
+      updateLeadNote();
+    });
+  });
+  function updateLeadNote() {
+    if (!state.travelDate) { $("lead-note").textContent = "Pick a travel date to see your booking day."; return; }
+    const book = new Date(state.travelDate + "T00:00:00Z");
+    book.setUTCDate(book.getUTCDate() - state.lead);
+    $("lead-note").textContent = "You would book around " + book.toISOString().slice(0, 10) + ".";
+  }
+  function updateCalculateGate() {
+    const ok = cityToCode($("from-city").value) && cityToCode($("to-city").value) && state.travelDate;
+    $("calculate-btn").disabled = !ok;
+  }
+
+  setTimeout(() => {
+    const d = new Date(); d.setUTCDate(d.getUTCDate() + 90);
+    $("travel-date").value = d.toISOString().slice(0, 10);
+    state.travelDate = $("travel-date").value;
+    updateLeadNote(); updateCalculateGate();
+  }, 0);
+
+  /* ---------- Calculate ---------- */
+  $("calculate-btn").addEventListener("click", runCalculation);
+  $("calc-retry").addEventListener("click", runCalculation);
+  function updateCardCode() {
+    const ids = Object.keys(state.cards);
+    state.cardCode = null;
+    if (ids.some(id => state.cards[id].code === "AMEX_ES")) state.cardCode = "AMEX_ES";
+    else if (ids.some(id => state.cards[id].code === "REVOLUT")) state.cardCode = "REVOLUT";
+    if (ids.includes("revolut_ultra")) state.plan = "ultra";
+    else if (ids.includes("revolut_metal")) state.plan = "metal";
+    else if (ids.includes("revolut_premium")) state.plan = "premium";
+  }
+  const LOADING_STEPS = [
+    "Checking cash prices with Duffel…",
+    "Comparing dates in your window…",
+    "Calculating your points timeline…",
+  ];
+  let loadTimer = null;
+  function showLoading() {
+    $("calc-loading").classList.remove("hidden");
+    $("calc-error").classList.add("hidden"); $("calc-error").classList.remove("flex");
+    $("calc-results").classList.add("hidden"); $("calc-results").classList.remove("flex");
+    let i = 0;
+    $("calc-loading-step").textContent = LOADING_STEPS[0];
+    if (loadTimer) clearInterval(loadTimer);
+    loadTimer = setInterval(() => {
+      i = Math.min(i + 1, LOADING_STEPS.length - 1);
+      $("calc-loading-step").textContent = LOADING_STEPS[i];
+    }, 1600);
+  }
+  function showResults() {
+    if (loadTimer) clearInterval(loadTimer);
+    $("calc-loading").classList.add("hidden");
+    $("calc-error").classList.add("hidden"); $("calc-error").classList.remove("flex");
+    $("calc-results").classList.remove("hidden"); $("calc-results").classList.add("flex");
+  }
+  let errorFix = null; // { label, step } for "go back and fix it here" navigation
+  function showError(title, text, needLogin, fix) {
+    if (loadTimer) clearInterval(loadTimer);
+    $("calc-loading").classList.add("hidden");
+    $("calc-results").classList.add("hidden"); $("calc-results").classList.remove("flex");
+    $("calc-error").classList.remove("hidden"); $("calc-error").classList.add("flex");
+    $("calc-error-title").textContent = title;
+    $("calc-error-text").textContent = text;
+    $("calc-login").classList.toggle("hidden", !needLogin);
+    errorFix = fix || null;
+    $("calc-fix").classList.toggle("hidden", !fix);
+    if (fix) $("calc-fix").textContent = fix.label;
+  }
+  $("calc-fix").addEventListener("click", () => {
+    if (errorFix) showStep(errorFix.step);
+  });
+
+  async function runCalculation() {
+    updateCardCode();
+    if (!state.cardCode) {
+      showError(
+        "Pick a first program",
+        "Select at least one card in step 1. Only the cards you turn on are used, and each purchase goes to the one that earns the most points.",
+        false,
+        { label: "Add a card in step 1", step: 1 }
+      );
+      showStep(3);
+      return;
+    }
+    showStep(3);
+    showLoading();
+    const travel = state.travelDate;
+    const start = new Date(travel + "T00:00:00Z");
+    start.setUTCDate(start.getUTCDate() - state.lead);
+    const body = {
+      origin: cityToCode($("from-city").value),
+      destination: cityToCode($("to-city").value),
+      window: { start: start.toISOString().slice(0, 10), end: travel },
+      cabin: state.cabin,
+      pax: state.pax,
+      card: state.cardCode,
+      plan: Object.keys(state.cards).some(id => String(id).startsWith("revolut_")) ? state.plan : null,
+      cards: Object.keys(state.cards),
+      spend: collectSpend(),
+      pointsHeld: totalEnteredPoints(),
+      monthlyTotal: parseFloat($("spend-total-input").value) || 0,
+    };
+    let planJson = null;
+    try {
+      const res = await fetch("/api/engine/runway", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(body),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        showError("Sign in to calculate", "Create a free account or sign in so we can run the live price check for your route.", true);
+        return;
+      }
+      if (!res.ok) {
+        const msg = (json && json.error && json.error.message) || "The engine replied with an error (" + res.status + ").";
+        showError("We could not complete the calculation", msg, false);
+        return;
+      }
+      planJson = json;
+    } catch (e) {
+      showError("Connection problem", "We could not reach the calculation engine. Check your connection and try again.", false);
+      return;
+    }
+    renderPlan(planJson);
+  }
+
+  /* ---------- Render the plan ---------- */
+  const VERDICT_LABEL = { usar_puntos: "Use points", pagar_en_efectivo: "Pay cash", insufficient_data: "Pay cash" };
+
+  function renderPlan(plan) {
+    state.hasPlan = true;
+    const alts = (plan.candidates || []).slice().sort((a, b) => {
+      const av = a.value_score, bv = b.value_score;
+      if (av != null || bv != null) return (bv ?? -Infinity) - (av ?? -Infinity);
+      return (a.cash && a.cash.amount || Infinity) - (b.cash && b.cash.amount || Infinity);
+    });
+    const rec = plan.recommended || alts.find((c) => c.cash) || null;
+    const cashPrice = rec && rec.cash ? rec.cash.amount : null;
+    const cashCur = rec && rec.cash ? (rec.cash.currency || "EUR") : "EUR";
+    const cashIsProjected = !!(rec && rec.cash && rec.cash.projected);
+    const cashLabel = cashPrice == null ? null : (cashIsProjected ? "≈ " : "") + fmtCash(cashPrice, cashCur);
+
+    let title, sub;
+    if (rec && rec.verdict === "usar_puntos" && cashLabel && rec.savings_eur) {
+      const sav = rec.savings_eur;
+      const pct = cashPrice ? Math.round((sav / cashPrice) * 100) : 0;
+      title = "Use points — " + (cashIsProjected ? "≈ " : "") + fmtCash(sav, cashCur) + " off (" + pct + "%)";
+      sub = "You pay the taxes and fees.";
+    } else if (cashLabel) {
+      title = "Pay cash — " + cashLabel;
+      sub = "Your points do not cover this trip by the travel date.";
+    } else {
+      title = "Pay cash";
+      sub = "";
+    }
+    $("verdict-title").textContent = title;
+    $("verdict-sub").textContent = sub;
+    $("verdict-why").textContent = "";
+    $("verdict-why").classList.add("hidden");
+    $("results-attribution").textContent = "";
+    $("verdict-badge").textContent = "";
+
+    // ----- timeline strip -----
+    const today = new Date().toISOString().slice(0, 10);
+    $("tl-today").textContent = today;
+    if (rec) {
+      const book = new Date(rec.depart_date + "T00:00:00Z");
+      book.setUTCDate(book.getUTCDate() - state.lead);
+      $("tl-book").textContent = book.toISOString().slice(0, 10);
+      $("tl-travel").textContent = rec.depart_date;
+    } else {
+      $("tl-book").textContent = "—";
+      $("tl-travel").textContent = state.travelDate;
+    }
+
+    // ----- points table (user inputs + guide rates) -----
+    state.monthlyPoints = typeof plan.monthly_points === "number" ? plan.monthly_points : null;
+    state.spendBonuses = plan.spend_bonuses || [];
+    const needed = neededFromPlan(plan, cashPrice);
+    renderPointsTable(needed);
+
+    // ----- price check table -----
+    renderPriceTable(alts, rec && rec.depart_date);
+    $("price-table-note").textContent = "";
+    renderRoutingResult(plan);
+
+    showResults();
+  }
+
+  /* needed total award points for the trip: derived from the engine gap, never invented */
+  function neededFromPlan(plan) {
+    const rec = plan.recommended || (plan.candidates || [])[0];
+    if (rec && typeof rec.miles_needed === "number") return rec.miles_needed;
+    if (rec && rec.gap) {
+      const projected = rec.proyeccion ? (rec.proyeccion.low + rec.proyeccion.high) / 2 + (rec.gap.gap || 0) : null;
+      if (projected) return Math.round(projected);
+      return Math.round(totalEnteredPoints() + (rec.gap.gap || 0));
+    }
+    return null;
+  }
+  function totalEnteredPoints() {
+    return Object.keys(state.cards).reduce((s, k) => s + (state.cards[k].points || 0), 0);
+  }
+
+  function monthlyEarn() {
+    const points = state.monthlyPoints;
+    if (typeof points === "number") return [points, points];
+    return [0, 0];
+  }
+  function renderRoutingResult(plan) {
+    const host = $("routing-lines");
+    if (!host) return;
+    host.innerHTML = "";
+    if (plan.spend_bonuses) {
+      plan.spend_bonuses.forEach(bonus => {
+        const line = document.createElement("p");
+        line.className = "font-body-sm text-body-sm text-on-surface";
+        line.textContent = (CARD_LABEL[bonus.card] || bonus.card) + " spend this month is " + fmtEur(bonus.spendEuros) + ". At least " + fmtEur(bonus.thresholdEuros) + " on that card adds " + fmtPts(bonus.points) + " points, for " + bonus.months + " months.";
+        host.appendChild(line);
+      });
+    }
+    if (plan.amex_travel_per_euro === 2) {
+      const line = document.createElement("p");
+      line.className = "font-body-sm text-body-sm text-on-surface-variant";
+      line.textContent = "Booking on Amex Travel Spain earns 2 points per € on any Amex card you selected.";
+      host.appendChild(line);
+    }
+  }
+  const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  function renderPointsTable(needed) {
+    const tbody = $("points-table-body");
+    tbody.innerHTML = "";
+    const [earnLo, earnHi] = monthlyEarn();
+    // months between today and the booking day
+    let months = 2;
+    if (state.travelDate) {
+      const travel = new Date(state.travelDate + "T00:00:00Z");
+      travel.setUTCDate(travel.getUTCDate() - state.lead);
+      months = Math.max(1, Math.round((travel - new Date()) / (30 * 24 * 3600000)));
+    }
+    const d = new Date();
+    let lo = totalEnteredPoints(), hi = lo;
+    const rows = [];
+    for (let i = 1; i <= months; i++) {
+      const m = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + i, 1));
+      const bonus = (state.spendBonuses || []).reduce((sum, item) => sum + (i <= item.months ? item.points : 0), 0);
+      const addLoMonth = earnLo + bonus;
+      const addHiMonth = earnHi + bonus;
+      lo += addLoMonth; hi += addHiMonth;
+      rows.push({
+        label: MON[m.getUTCMonth()] + " " + String(m.getUTCFullYear()),
+        addLabel: "+" + fmtPts(addLoMonth) + (addHiMonth !== addLoMonth ? "–" + fmtPts(addHiMonth) : ""),
+        balLabel: fmtPts(Math.min(lo, hi)) + (lo !== hi ? "–" + fmtPts(hi) : ""),
+      });
+    }
+    rows.forEach(r => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = '<td class="py-1.5 border-b border-line/60 text-primary">' + esc(r.label) + '</td>' +
+        '<td class="py-1.5 border-b border-line/60 text-right text-on-surface-variant">' + esc(r.addLabel) + '</td>' +
+        '<td class="py-1.5 border-b border-line/60 text-right text-primary font-medium">' + esc(r.balLabel) + '</td>';
+      tbody.appendChild(tr);
+    });
+    // purchases read from the DOM rows
+    let purchaseEur = 0;
+    document.querySelectorAll("#purchase-rows input[type=number]").forEach(i => { purchaseEur += parseFloat(i.value) || 0; });
+    const purchasePts = Math.round(purchaseEur * shoppingRate());
+    const notes = [];
+    if (purchaseEur > 0) notes.push("Planned purchases (" + fmtEur(purchaseEur) + ") would add roughly " + fmtPts(purchasePts) + " more points when they happen.");
+    const last = rows[rows.length - 1];
+    const balText = last ? "Your balance at booking: " + last.balLabel + "." : "";
+    if (needed !== null) {
+      const strong = "About <strong class='text-primary font-medium'>" + fmtPts(needed) + "</strong> points to book this trip for " + state.pax + (state.pax === 1 ? " traveller" : " travellers") + ". " + balText;
+      $("points-table-note").innerHTML = esc(notes.join(" ")) + (notes.length ? " " : "") + strong;
+    } else {
+      $("points-table-note").innerHTML = esc(notes.join(" ") + " " + balText);
+    }
+  }
+
+  function renderPriceTable(cands, bestDate) {
+    const tbody = $("price-table-body");
+    tbody.innerHTML = "";
+    if (!cands.length) return;
+    cands.forEach((c) => {
+      if (!c.cash) return;
+      const on = c.depart_date === bestDate;
+      const tr = document.createElement("tr");
+      const cur = c.cash.currency || "EUR";
+      const amount = Number(c.cash.amount);
+      const savings = Number(c.savings_eur);
+      const amountOk = Number.isFinite(amount) && amount >= 0;
+      const savingsOk = Number.isFinite(savings) && savings > 0 && amountOk;
+      const approx = c.cash.projected ? "≈ " : "";
+      const price = amountOk ? approx + fmtCash(amount, cur) : "—";
+      const due = savingsOk ? Math.max(0, Math.round(amount) - Math.round(savings)) : null;
+      const withPoints = due === null ? "—" : approx + fmtCash(due, cur);
+      const pct = savingsOk ? Math.round((savings / amount) * 100) : 0;
+      const saved = savingsOk ? "−" + approx + fmtCash(savings, cur) + " (" + pct + "%)" : "—";
+      tr.innerHTML =
+        '<td class="py-1.5 border-b border-line/60 text-primary' + (on ? " font-medium" : "") + '">' + esc(c.depart_date) + (on ? ' <span class="ml-1 font-label-sm text-label-sm uppercase tracking-wider text-secondary">best</span>' : '') + '</td>' +
+        '<td class="py-1.5 border-b border-line/60 text-right text-primary">' + esc(price) + '</td>' +
+        '<td class="py-1.5 border-b border-line/60 text-right text-primary font-medium">' + esc(withPoints) + '</td>' +
+        '<td class="py-1.5 border-b border-line/60 text-right text-primary font-medium">' + saved + '</td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.querySelectorAll(".money-stepper").forEach((el) => wireStepper(el));
+
+  renderCardFields();
+  updateBreakdown();
+})();
+</script>
+
+</script></div></main><footer class="w-full bg-surface-container-low shadow-[0_-1px_6px_rgba(0,0,0,0.02)]"><div class="max-w-[1180px] mx-auto px-margin-mobile md:px-margin py-space-xl flex flex-col md:flex-row justify-between items-start md:items-end gap-space-lg"><div class="flex flex-col gap-space-xs"><div class="flex items-center gap-2"><div class="w-2.5 h-[2px] bg-tertiary-fixed-dim"></div><div class="w-[7px] h-[2px] bg-tertiary-fixed-dim"></div><span class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-primary">A Una Milla</span></div><p class="font-headline-sm text-headline-sm text-primary mt-1">A Una Milla</p><p class="font-body-sm text-body-sm text-on-surface-variant max-w-md mt-2">Plan your next trip with the points you already have.</p></div><div class="flex flex-col md:items-end gap-space-xs"><p class="font-label-sm text-label-sm text-quiet tracking-wider mt-1">© MMXXIV A Una Milla. All sovereign rights reserved.</p></div></div></footer><script type="module" src="/auth-bar.mjs"></script><script type="module" src="/theme-boot.mjs"></script></body></html>
