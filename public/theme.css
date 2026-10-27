@@ -354,3 +354,223 @@ html[data-theme="dark"] .mobile-nav__link[aria-current="page"] {
     width: 100%;
   }
 }
+
+/* Frosted surfaces over a static wash of navy and teal.
+   The wash does not animate: a moving layer behind backdrop-filter
+   would re-blur every glass panel on each frame.
+   Solid ink buttons stay solid so the action still reads. */
+body {
+  background-color: #f4efe6;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -18%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 8% 0%, rgba(177, 199, 245, 0.55), transparent 42%),
+    radial-gradient(ellipse at 92% 12%, rgba(18, 224, 196, 0.28), transparent 36%),
+    radial-gradient(ellipse at 70% 100%, rgba(0, 23, 58, 0.14), transparent 46%),
+    radial-gradient(ellipse at 18% 88%, rgba(255, 249, 238, 0.9), transparent 40%);
+}
+
+header,
+main,
+footer {
+  position: relative;
+  z-index: 1;
+}
+
+main.bg-surface,
+html[data-theme="dark"] main.bg-surface {
+  background-color: transparent !important;
+}
+
+header.fixed,
+.mobile-nav.bg-surface\/90 {
+  background: rgba(251, 246, 238, 0.58) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.62);
+  box-shadow: 0 10px 32px rgba(0, 23, 58, 0.06);
+}
+
+footer.bg-surface-container-low {
+  background: rgba(251, 246, 238, 0.55) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.35);
+  backdrop-filter: blur(16px) saturate(1.35);
+  border-top: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 -12px 32px rgba(0, 23, 58, 0.04);
+}
+
+.bg-surface-container-low.border,
+.bg-surface-container-low.shadow-sm,
+#chat-gate {
+  background: rgba(255, 249, 238, 0.46) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.45);
+  backdrop-filter: blur(16px) saturate(1.45);
+  border-color: rgba(255, 255, 255, 0.72) !important;
+  box-shadow:
+    0 14px 36px rgba(21, 44, 82, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  border-radius: 14px;
+}
+
+#thread > div,
+.suggestion,
+.card-chip.bg-surface,
+.bank-chip.bg-surface,
+.step-tab.bg-surface,
+#new-chat,
+#open-trips,
+a.bg-surface.border,
+select.bg-surface,
+textarea.bg-surface,
+input.bg-surface {
+  background: rgba(255, 249, 238, 0.72) !important;
+  border-color: rgba(255, 255, 255, 0.72) !important;
+  box-shadow:
+    0 8px 20px rgba(21, 44, 82, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  border-radius: 14px;
+}
+
+.suggestion,
+.card-chip,
+.bank-chip,
+.step-tab,
+#new-chat,
+#open-trips,
+a.bg-surface.border {
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background-color 0.22s ease;
+}
+
+.suggestion:hover,
+.card-chip.bg-surface:hover,
+.bank-chip.bg-surface:hover,
+.step-tab.bg-surface:hover,
+#new-chat:hover,
+#open-trips:hover,
+a.bg-surface.border:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 18px 36px rgba(21, 44, 82, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+a.bg-primary,
+button.bg-primary {
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+a.bg-primary:hover,
+button.bg-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(0, 23, 58, 0.2);
+}
+
+header nav a {
+  transition: color 0.2s ease;
+}
+
+main h1,
+.house-band,
+#chat-app,
+#chat-gate,
+#planner > .grid,
+#planner > .bg-surface-container-low {
+  animation: aum-rise 0.7s ease both;
+}
+
+.house-band:nth-of-type(2) {
+  animation-delay: 0.12s;
+}
+
+.house-band:nth-of-type(3) {
+  animation-delay: 0.22s;
+}
+
+#thread > div {
+  animation: aum-rise 0.4s ease both;
+}
+
+@keyframes aum-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+html[data-theme="dark"] body {
+  background-color: #070b0e;
+}
+
+html[data-theme="dark"] body::before {
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(18, 224, 196, 0.34), transparent 42%),
+    radial-gradient(ellipse at 88% 16%, rgba(177, 199, 245, 0.28), transparent 40%),
+    radial-gradient(ellipse at 48% 100%, rgba(18, 224, 196, 0.16), transparent 48%);
+}
+
+html[data-theme="dark"] header.fixed,
+html[data-theme="dark"] .mobile-nav.bg-surface\/90 {
+  background: rgba(7, 11, 14, 0.52) !important;
+  border-bottom-color: rgba(18, 224, 196, 0.28);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+}
+
+html[data-theme="dark"] footer.bg-surface-container-low {
+  background: rgba(7, 11, 14, 0.5) !important;
+  border-top-color: rgba(18, 224, 196, 0.22);
+}
+
+html[data-theme="dark"] .bg-surface-container-low.border,
+html[data-theme="dark"] .bg-surface-container-low.shadow-sm,
+html[data-theme="dark"] #chat-gate,
+html[data-theme="dark"] #thread > div,
+html[data-theme="dark"] .suggestion,
+html[data-theme="dark"] .card-chip.bg-surface,
+html[data-theme="dark"] .bank-chip.bg-surface,
+html[data-theme="dark"] .step-tab.bg-surface,
+html[data-theme="dark"] #new-chat,
+html[data-theme="dark"] #open-trips,
+html[data-theme="dark"] a.bg-surface.border,
+html[data-theme="dark"] select.bg-surface,
+html[data-theme="dark"] textarea.bg-surface,
+html[data-theme="dark"] input.bg-surface {
+  background: rgba(12, 22, 26, 0.5) !important;
+  border-color: rgba(18, 224, 196, 0.28) !important;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="dark"] a.bg-primary:hover,
+html[data-theme="dark"] button.bg-primary:hover {
+  box-shadow: 0 12px 28px rgba(18, 224, 196, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main h1,
+  .house-band,
+  #chat-app,
+  #chat-gate,
+  #planner > .grid,
+  #planner > .bg-surface-container-low,
+  #thread > div {
+    animation: none !important;
+  }
+
+  .suggestion:hover,
+  .card-chip.bg-surface:hover,
+  .bank-chip.bg-surface:hover,
+  .step-tab.bg-surface:hover,
+  #new-chat:hover,
+  #open-trips:hover,
+  a.bg-surface.border:hover,
+  a.bg-primary:hover,
+  button.bg-primary:hover {
+    transform: none;
+  }
+}
