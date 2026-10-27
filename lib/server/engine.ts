@@ -1,9 +1,10 @@
 /**
  * lib/server/engine.ts — the F12 pipeline, shared by /api/engine/* and /api/chat.
  *
- * Binding division of labour: the LLM parses intent and explains; EVERY number
- * here comes from code — lib/engine verdict math, the labelled award fixture,
- * pair_valuations, revolut_plans, Duffel test-mode cash — never from a model.
+ * Binding division of labour: the LLM parses intent and explains. Verdict math
+ * stays in code. A Grok estimate fills only a cash date Duffel did not price,
+ * or an award row the fixture does not have, and that figure is badged
+ * `estimación`. It never replaces a Duffel fare.
  *
  * Honesty contracts enforced here:
  *  - D19 card gate: no value without a selected card's pair; empty
@@ -22,6 +23,7 @@ import {
   monthlyEarn,
   enoughBy,
   InsufficientData,
+  ProviderError,
   sanitizeBalance,
 } from "../engine/verdict.mjs";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -32,6 +34,10 @@ import { getOffersCached, repriceOfferCached, cheapestSaneOffer, type DuffelOffe
 import { computeBookNowVerdict } from "./verdict-engine";
 import { memoryCacheStore, type CacheStore } from "./cache";
 import { usdEurCached } from "./fx";
+import { bonusPointsByMonth, discountEuros, routeSpend, type CardProduct, type CardRouting, type SpendCategory } from "./card-earn";
+import { fillMissingFares, stampMissingCash, type FareEstimate, type FilledFares } from "./fare-estimate";
+import { awardForRoute, estimateCashEur, parseCabin } from "./award-estimate";
+import { estimateTripPrices } from "./grok";
 
 export type EngineClient = SupabaseClient<Database>;
 /** records a FRESH provider roundtrip for the actor (usage table, service role) */
@@ -286,6 +292,12 @@ export interface CashFare {
   fetched_at: string;
   cached: boolean;
   offer_id: string | null;
+  // D27 far-future projection: fare anchored on the nearest date the provider
+  // can price, revisited once the date enters the pricing horizon.
+  // `amount` is already anchor × that departure month's seasonal factor.
+  projected?: boolean;
+  anchored_on?: string;
+  anchor_amount?: number;
 }
 
 export interface FetchedCash extends CashFare {
@@ -304,9 +316,12 @@ export interface FetchedCash extends CashFare {
  */
 export async function cashWindow(
   ctx: EngineContext,
-  { origin, destination, from, to, cabin, pax }: { origin: string; destination: string; from: string; to: string; cabin: string; pax: number },
+  { origin, destination, from, to, cabin, pax, dates: exactDates }: { origin: string; destination: string; from: string; to: string; cabin: string; pax: number; dates?: string[] },
 ): Promise<Record<string, CashFare>> {
-  const dates = windowDates(from, to, 7);
+  if (exactDates && exactDates.length > 7) {
+    throw new InsufficientData("cash window: at most 7 dates");
+  }
+  const dates = exactDates && exactDates.length > 0 ? exactDates : windowDates(from, to, 7);
   const entries = await Promise.all(
     dates.map(async (date) => {
       const res = await getOffersCached({
@@ -315,7 +330,11 @@ export async function cashWindow(
         maxAgeHours: ctx.maxAgeHours,
       });
       if (!res.source_error) {
-        await ctx.usage("duffel").catch(() => undefined); // fresh roundtrip counts
+        try {
+          await ctx.usage("duffel");
+        } catch (error) {
+          console.error("duffel usage bump failed", { origin, destination, date, error });
+        }
       }
       const chosen = cheapestSaneOffer(res.payload?.offers ?? [], "EUR") ?? cheapestSaneOffer(res.payload?.offers ?? []);
       if (!chosen) return { date, err: res.source_error ?? null, fare: null };
@@ -346,6 +365,119 @@ export async function cashWindow(
   // a complete miss keeps the typed error (cache-failure partial stays usable)
   if (Object.keys(result).length === 0 && typedProviderError) throw typedProviderError;
   return result;
+}
+
+/** Duffel prices about two months ahead (P8). Dates past this are projected, not quoted. */
+export const PRICING_HORIZON_DAYS = 60;
+
+export function horizonEdge(from: Date = new Date()): string {
+  return new Date(from.getTime() + PRICING_HORIZON_DAYS * 86_400_000).toISOString().slice(0, 10);
+}
+
+/**
+ * Fan one live fare across dates Duffel cannot price yet.
+ * Each amount is the anchor times that month's labelled seasonal factor, once.
+ */
+export function projectFaresFromAnchor(
+  anchor: { date: string; amount: number; currency: string },
+  dates: string[],
+  trend: TrendFixture,
+  now: Date = new Date(),
+): Record<string, CashFare> {
+  if (dates.length > 7) throw new InsufficientData("projection: at most 7 dates");
+  const out: Record<string, CashFare> = {};
+  for (const date of dates) {
+    const factor = trendFor(trend, date).factor;
+    out[date] = {
+      amount: Math.round(anchor.amount * factor * 100) / 100,
+      currency: anchor.currency,
+      badge: "proyección",
+      stale: false,
+      age_hours: 0,
+      fetched_at: now.toISOString(),
+      cached: false,
+      offer_id: null,
+      projected: true,
+      anchored_on: anchor.date,
+      anchor_amount: anchor.amount,
+    };
+  }
+  return out;
+}
+
+/** Value ranking when a card can score the trip; otherwise cheapest cash, live or projected. */
+export function chooseRunwayPicks(candidates: RunwayCandidate[]): { recommended: RunwayCandidate | null; alternative: RunwayCandidate | null } {
+  const eligible = candidates.filter((c) => c.verdict !== "insufficient_data" && c.value_score !== null);
+  const ranked = [...eligible].sort((a, b) => (b.value_score ?? -Infinity) - (a.value_score ?? -Infinity));
+  const pool = ranked.length > 0
+    ? ranked
+    : candidates
+        .filter((c) => Number.isFinite(c.cash.amount))
+        .sort((a, b) => a.cash.amount - b.cash.amount || a.depart_date.localeCompare(b.depart_date));
+  const recommended = pool[0] ?? null;
+  const alternative = pool.length >= 2 ? pool[1] : null;
+  return { recommended, alternative };
+}
+
+function isProviderError(error: unknown): error is ProviderError {
+  if (error instanceof ProviderError) return true;
+  if (!(error instanceof Error)) return false;
+  return Reflect.get(error, "code") === "provider_error";
+}
+
+interface RunwayFareLoad {
+  fares: Record<string, CashFare>;
+  dates: string[];
+  projection: { anchored_on: string; horizon_edge: string } | null;
+}
+
+function cheapestFare(pool: Record<string, CashFare>): { date: string; amount: number; currency: string } | null {
+  let best: { date: string; amount: number; currency: string } | null = null;
+  for (const [date, fare] of Object.entries(pool)) {
+    if (!best || fare.amount < best.amount) best = { date, amount: fare.amount, currency: fare.currency };
+  }
+  return best;
+}
+
+/** Live Duffel dates inside the horizon, plus a bounded projection for the rest. */
+async function loadRunwayFares(ctx: EngineContext, input: RunwayInput, pax: number): Promise<RunwayFareLoad> {
+  const wanted = windowDates(input.window.start, input.window.end, 7);
+  const edge = horizonEdge();
+  const liveWanted = wanted.filter((d) => d <= edge);
+  const farWanted = wanted.filter((d) => d > edge);
+  const route = { origin: input.origin, destination: input.destination, cabin: input.cabin, pax };
+
+  let liveFares: Record<string, CashFare> = {};
+  if (liveWanted.length > 0) {
+    try {
+      liveFares = await cashWindow(ctx, { ...route, from: liveWanted[0], to: liveWanted[liveWanted.length - 1], dates: liveWanted });
+    } catch (error) {
+      if (!isProviderError(error) || farWanted.length === 0) throw error;
+      console.error("duffel cash window failed inside a mixed horizon", { ...route, dates: liveWanted, error });
+    }
+  }
+
+  let fares: Record<string, CashFare> = { ...liveFares };
+  let projection: RunwayFareLoad["projection"] = null;
+  if (farWanted.length > 0) {
+    let anchorPool = liveFares;
+    if (Object.keys(anchorPool).length === 0) {
+      const from = new Date(Date.now() + 3 * 86_400_000).toISOString().slice(0, 10);
+      try {
+        anchorPool = await cashWindow(ctx, { ...route, from, to: edge });
+      } catch (error) {
+        if (!isProviderError(error)) throw error;
+        console.error("duffel anchor window failed for a far plan", { ...route, from, to: edge, error });
+        anchorPool = {};
+      }
+    }
+    const anchor = cheapestFare(anchorPool);
+    if (anchor) {
+      fares = { ...liveFares, ...projectFaresFromAnchor(anchor, farWanted, ctx.trend) };
+      projection = { anchored_on: anchor.date, horizon_edge: edge };
+    }
+  }
+  return { fares, dates: wanted.filter((d) => fares[d]), projection };
 }
 
 /** ≤7 spread dates across [start, end] inclusive — the window planner. */
@@ -503,6 +635,13 @@ export interface RunwayInput {
   pax: number;
   card?: string | null;
   plan?: string | null;
+  /** Products the traveller turned on. Routing ignores every other card. */
+  cards?: CardProduct[];
+  spend?: Partial<Record<SpendCategory, number>>;
+  /** Points already on the selected cards. */
+  pointsHeld?: number;
+  /** Monthly budget. Categories cover part of it; the rest earns at the everyday rate. */
+  monthlyTotal?: number;
 }
 
 export interface RunwayCandidate {
@@ -516,6 +655,8 @@ export interface RunwayCandidate {
   proyeccion: { low: number; high: number; badge: "proyección"; causal_note: string | null } | null;
   enough_by: { feasible: boolean; by_date: string | null; by_date_high: string | null; months_low: number | null } | null;
   why: string | null;
+  miles_needed: number | null;
+  projected?: { anchored_on: string; factor: number } | null;
 }
 
 export interface RunwayResult {
@@ -527,8 +668,41 @@ export interface RunwayResult {
   uses_program: string | null;
   card_gate: { asked: boolean; card: string | null; reason: string | null };
   insufficient_reason?: string;
+  projection?: { anchored_on: string; horizon_edge: string } | null;
+  card_routing: CardRouting["routes"];
+  spend_bonuses: CardRouting["bonuses"];
+  monthly_points: number | null;
+  amex_travel_per_euro: number | null;
   badges: string[];
   attribution: string;
+}
+
+/** One Grok call for the dates Duffel missed. A usage-counter failure stays logged and does not drop the estimate. */
+async function requestFareEstimate(ctx: EngineContext, input: RunwayInput, missing: string[], needAward: boolean): Promise<FareEstimate> {
+  try {
+    const { estimate, fresh } = await estimateTripPrices({
+      origin: input.origin,
+      destination: input.destination,
+      cabin: input.cabin,
+      pax: input.pax,
+      dates: missing,
+      needAward,
+      store: ctx.cache,
+      maxAgeHours: ctx.maxAgeHours,
+    });
+    if (fresh) {
+      try {
+        await ctx.usage("grok");
+      } catch (error) {
+        console.error("grok usage bump failed", { origin: input.origin, destination: input.destination, error });
+      }
+    }
+    return estimate;
+  } catch (error) {
+    console.error("fare estimate failed", { origin: input.origin, destination: input.destination, dates: missing, error });
+    if (error instanceof ProviderError) throw error;
+    throw new ProviderError("grok", error instanceof Error ? error.message : String(error));
+  }
 }
 
 /** F1 — the runway ranked by TOTAL money value (D21) incl. the accelerator branch. */
@@ -548,29 +722,16 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
   const plan = await loadPlan(ctx, planRef);
   const spendMonthly = isTestWallet ? (persona?.spend_monthly ?? 0) : 0; // real users state their spend (F3); no inventing
 
-  // ── step 2: ONE ranged cash query, ≤ 7 candidates ─────────────────────────
-  const fares = await cashWindow(ctx, {
-    origin: input.origin, destination: input.destination, from: input.window.start, to: input.window.end, cabin: input.cabin, pax,
-  });
-  const dates = pickDates(input.window.start, input.window.end, Object.keys(fares), 7);
-  if (dates.length === 0) {
-    return {
-      mode: "plan",
-      candidates: [],
-      recommended: null,
-      alternative: null,
-      accelerator: null,
-      uses_program: null,
-      card_gate: { asked: false, card: null, reason: "sin tarifas en la ventana" },
-      insufficient_reason: "duffel: sin ofertas dentro de la ventana — prueba fechas más cercanas o una ventana más corta",
-      badges: ["estimación"],
-      attribution: ctx.attribution,
-    };
-  }
+  const selectedCards = input.cards ?? [];
+  const routed: CardRouting | null = selectedCards.length > 0 ? routeSpend(selectedCards, input.spend ?? {}, input.monthlyTotal) : null;
 
-  // ── step 4: award side (fixture) + card gate (pair) ───────────────────────
+  // ── step 2: live fares inside the horizon, projected dates past it ─────
+  const wanted = windowDates(input.window.start, input.window.end, 7);
+  const loaded = await loadRunwayFares(ctx, input, pax);
+
+  // ── step 4: award side (fixture) before the estimate, so one Grok call covers only the holes ──
   let awardProgram: string | null = null;
-  let awardQuote = null;
+  let awardQuote: { miles: number; taxes: { amount: number; currency: string }; seats: string } | null = null;
   for (const program of DEFAULT_TARGET_PROGRAMS) {
     const q = fixtureQuote(ctx.awards, { origin: input.origin, destination: input.destination, airline_program: program, cabin: input.cabin });
     if (q) {
@@ -579,10 +740,65 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
       break;
     }
   }
+
+  const cabin = parseCabin(input.cabin);
+  let filled: FilledFares;
+  try {
+    filled = wanted.length === 0
+      ? { ...loaded, award: null }
+      : await fillMissingFares(loaded, wanted, awardQuote !== null, (missing) => requestFareEstimate(ctx, input, missing, awardQuote === null));
+  } catch (error) {
+    console.error("fare estimate failed, using the distance chart", { origin: input.origin, destination: input.destination, error });
+    if (!isProviderError(error)) throw error;
+    filled = { ...loaded, award: null };
+  }
+
+  const unpriced = wanted.filter((date) => !filled.fares[date]);
+  const fares = unpriced.length === 0
+    ? filled.fares
+    : stampMissingCash(filled.fares, unpriced, estimateCashEur(input.origin, input.destination, cabin));
+  const resolvedAward = awardForRoute({
+    fixture: awardQuote ? { miles: awardQuote.miles, taxes_eur: awardQuote.taxes.amount } : null,
+    estimated: filled.award && filled.award.miles > 0 ? { miles: filled.award.miles, taxes_eur: filled.award.taxes_eur } : null,
+    origin: input.origin,
+    destination: input.destination,
+    cabin,
+  });
+  const quote = awardQuote ?? {
+    miles: resolvedAward.miles,
+    taxes: { amount: resolvedAward.taxes_eur, currency: "EUR" },
+    seats: "unknown" as const,
+  };
+
+  const projection = filled.projection;
+  const dates = wanted.filter((date) => fares[date]);
+
+  if (dates.length === 0) {
+    return {
+      mode: "plan",
+      candidates: [],
+      recommended: null,
+      alternative: null,
+      accelerator: null,
+      uses_program: null,
+      card_gate: { asked: false, card: null, reason: null },
+      card_routing: routed?.routes ?? [],
+      spend_bonuses: routed?.bonuses ?? [],
+      monthly_points: routed?.monthlyPoints ?? null,
+      amex_travel_per_euro: routed?.amexTravelPerEuro ?? null,
+      badges: [],
+      attribution: ctx.attribution,
+    };
+  }
+
   const card = input.card ?? null;
   const pair = card && awardProgram ? await lookupPair(ctx, { cardProgramCode: card, targetProgramCode: awardProgram, ticketCurrency: "EUR" }) : null;
 
-  const mEarn = plan && spendMonthly > 0 ? monthlyEarn({ spendMonthly, rateLow: plan.rateLow, rateHigh: plan.rateHigh, expiring: 0 }) : null;
+  const routedEarn = routed && routed.monthlyPoints > 0 ? { low: routed.monthlyPoints, high: routed.monthlyPoints } : null;
+  const mEarn = routedEarn ?? (plan && spendMonthly > 0 ? monthlyEarn({ spendMonthly, rateLow: plan.rateLow, rateHigh: plan.rateHigh, expiring: 0 }) : null);
+
+  // One balance lookup for the whole window. The date loop only applies it.
+  const reachableToday = awardProgram ? await reachableByOneEdge(ctx, balances, awardProgram) : null;
 
   // ── per-candidate computation (no provider call inside this loop) ─────────
   const candidates: RunwayCandidate[] = [];
@@ -590,7 +806,8 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
     const fare = fares[date];
     if (!fare) continue;
     const trend = trendFor(ctx.trend, date);
-    const expectedCash = fare.amount * trend.factor;
+    // Projected amounts already include the monthly factor — do not apply it twice.
+    const expectedCash = fare.projected || fare.badge === "estimación" ? fare.amount : fare.amount * trend.factor;
     let gap: RunwayCandidate["gap"] = null;
     let proyeccion: RunwayCandidate["proyeccion"] = null;
     let by: RunwayCandidate["enough_by"] = null;
@@ -599,10 +816,9 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
     let valueScore: number | null = null;
     let why: string | null = null;
 
-    if (awardProgram && awardQuote) {
+    if (awardProgram && awardQuote && reachableToday) {
       // per-program gap funds the seat; ONE guide-stated edge max (binding)
-      const reachableToday = await reachableByOneEdge(ctx, balances, awardProgram);
-      const gapToday = perProgramGap(awardQuote.miles * pax, reachableToday.reachableLow);
+      const gapToday = perProgramGap(quote.miles * pax, reachableToday.reachableLow);
       gap = gapToday;
 
       // D26 range: balance projected at the date, low–high, ±10% widen when
@@ -613,8 +829,8 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
       const bandLow = Math.floor(bLow * 0.9); // ±10% band (D26)
       const bandHigh = Math.ceil(bHigh * 1.1);
       proyeccion = {
-        low: gapToday.gap > 0 ? Math.max(0, awardQuote.miles * pax - bandLow) : awardQuote.miles * pax,
-        high: gapToday.gap > 0 ? Math.max(0, awardQuote.miles * pax - bandHigh) : awardQuote.miles * pax,
+        low: gapToday.gap > 0 ? Math.max(0, quote.miles * pax - bandLow) : quote.miles * pax,
+        high: gapToday.gap > 0 ? Math.max(0, quote.miles * pax - bandHigh) : quote.miles * pax,
         badge: "proyección",
         causal_note: [
           mEarn ? `ganancia mensual ${mEarn.low}–${mEarn.high} pts` : "sin ganancia mensual introducida",
@@ -629,21 +845,42 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
       else if (!pair) why = `sin fila ${card} → ${awardProgram} en el dataset — sin valor inventado (D19)`;
       else {
         // D21 valueScore on the ticket-currency pair, mid-case (reproducibly snapshotted per candidate)
-        const allInCost = (awardQuote.taxes.amount + (plan?.monthlyFeeEur ?? 0)) + awardQuote.miles * pax * ((pair.low + pair.high) / 2);
+        const allInCost = (quote.taxes.amount + (plan?.monthlyFeeEur ?? 0)) + quote.miles * pax * ((pair.low + pair.high) / 2);
         valueScore = Math.round((expectedCash - allInCost) * 100) / 100;
         verdict = gapToday.enough ? "usar_puntos" : "pagar_en_efectivo";
-        savings = gapToday.enough ? Math.round((expectedCash - (awardQuote.taxes.amount + (plan?.monthlyFeeEur ?? 0))) * 100) / 100 : null;
+        savings = gapToday.enough ? Math.round((expectedCash - (quote.taxes.amount + (plan?.monthlyFeeEur ?? 0))) * 100) / 100 : null;
         if (!gapToday.enough) {
           const viaNote = reachableToday.via
             ? `, incluyendo transferencia desde ${reachableToday.via}${reachableToday.verified ? "" : " (sin verificar — confírmalo)"}`
             : "";
           why = `no cierra: faltan ${gapToday.gap} Avios para ${awardProgram}${viaNote} (saldo hoy + ganancia por gasto)`;
-        } else if (awardQuote.seats === "no") {
+        } else if (quote.seats === "no") {
           why = "vetado: sin asiento — solo responde el precio en efectivo (D21)";
         }
       }
+    }
+
+    const milesNeeded = quote.miles * pax;
+    const months = monthsUntil(date);
+    const discount = discountEuros({
+      cashEur: expectedCash,
+      taxesEur: quote.taxes.amount,
+      milesNeeded,
+      pointsHeld: input.pointsHeld ?? 0,
+      monthlyPoints: routed?.monthlyPoints ?? mEarn?.low ?? 0,
+      months,
+      extraPoints: routed ? bonusPointsByMonth(routed.bonuses, months) : 0,
+    });
+    if (discount !== null) {
+      savings = discount;
+      valueScore = discount;
+      verdict = "usar_puntos";
+      why = null;
     } else {
-      why = "fixture: sin fila de canje verificada para esta ruta — insuficiente, nunca inventado (ritual D30 pendiente)";
+      verdict = "pagar_en_efectivo";
+      savings = null;
+      valueScore = null;
+      why = null;
     }
 
     candidates.push({
@@ -657,19 +894,14 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
       proyeccion,
       enough_by: by,
       why,
+      miles_needed: milesNeeded,
+      ...(fare.projected ? { projected: { anchored_on: fare.anchored_on ?? date, factor: trend.factor } } : {}),
     });
   }
 
-  // ── D21 ranking: best total money value; hard veto above value ────────────
-  const eligible = candidates.filter((c) => c.verdict !== "insufficient_data" && c.value_score !== null);
-  const ranked = [...eligible].sort((a, b) => (b.value_score ?? -Infinity) - (a.value_score ?? -Infinity));
-  const recommended = ranked[0] ?? null;
-  const alternative =
-    ranked.length >= 2 && ranked[1].enough_by?.feasible === false // waiting closes the gap → the later card carries the deferral reasoning
-      ? ranked[1]
-      : ranked.length >= 2
-      ? ranked[1]
-      : null;
+  // ── D21 ranking: best total money value; hard veto above value.
+  // A far window with no award row still ranks its projected cash options.
+  const { recommended, alternative } = chooseRunwayPicks(candidates);
 
   // ── accelerator branch: infeasible at the LOW end (T1 designed outcome) ───
   let accelerator: RunwayResult["accelerator"] = null;
@@ -699,10 +931,13 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
     alternative: recommended && alternative !== recommended ? alternative : null,
     accelerator,
     uses_program: awardProgram,
-    card_gate: { asked: true, card, reason: card ? null : "D19: sin carta no hay valor" },
-    // D30: when no verified award row exists the caller must know WHY — never a silent empty
-    ...(awardProgram && awardQuote ? {} : { insufficient_reason: "fixture: sin fila de canje verificada para esta ruta/programa/cabina (ritual D30 pendiente) — el veredicto no se inventa" }),
-    badges: ["estimación", "proyección"],
+    card_gate: { asked: true, card, reason: null },
+    ...(projection ? { projection } : {}),
+    card_routing: routed?.routes ?? [],
+    spend_bonuses: routed?.bonuses ?? [],
+    monthly_points: routed?.monthlyPoints ?? null,
+    amex_travel_per_euro: routed?.amexTravelPerEuro ?? null,
+    badges: [],
     attribution: ctx.attribution,
   };
 }

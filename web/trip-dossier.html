@@ -39,9 +39,17 @@
 <!-- Cards -->
 <div class="flex flex-col gap-space-sm">
 <label class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant">Cards you use</label>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Select every card you actually hold. Each purchase is assigned only to one of those cards.</p>
 <div class="flex flex-wrap gap-space-sm" id="card-options">
-<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="Revolut" data-earn="0.5" data-code="REVOLUT">Revolut</button>
-<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="Amex" data-earn="1" data-code="AMEX_ES">Amex</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="amex_gold" data-code="AMEX_ES">Amex Gold</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="amex_green" data-code="AMEX_ES">Amex Green</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="amex_business_gold" data-code="AMEX_ES">Amex Business Gold</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="amex_platinum" data-code="AMEX_ES">Amex Platinum</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="amex_business_platinum" data-code="AMEX_ES">Amex Business Platinum</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="amex_centurion" data-code="AMEX_ES">Amex Centurion</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="revolut_premium" data-code="REVOLUT">Revolut Premium</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="revolut_metal" data-code="REVOLUT">Revolut Metal</button>
+<button type="button" class="card-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-card="revolut_ultra" data-code="REVOLUT">Revolut Ultra</button>
 </div>
 <div id="card-fields" class="flex flex-col gap-space-sm"></div>
 </div>
@@ -153,28 +161,6 @@
 <span class="material-symbols-outlined text-[16px]">add</span>
 <span>Add a purchase</span>
 </button>
-</div>
-
-<!-- Revolut plan (shown when Revolut selected) -->
-<div id="revolut-plan-box" class="hidden flex-col gap-space-sm">
-<label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Which Revolut plan do you pay for?</label>
-<div class="flex flex-wrap gap-space-sm" id="revolut-plans">
-<button type="button" class="plan-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-plan="premium">Premium · €9.99/mo</button>
-<button type="button" class="plan-chip h-[40px] px-space-md bg-primary border border-primary font-label-sm text-label-sm uppercase tracking-wider text-on-primary transition-colors" data-plan="metal">Metal · €15.99/mo</button>
-<button type="button" class="plan-chip h-[40px] px-space-md bg-surface border border-line font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:border-primary transition-colors" data-plan="ultra">Ultra · €55/mo</button>
-</div>
-</div>
-
-<!-- Amex note (shown when Amex selected) -->
-<div id="amex-box" class="hidden flex-col gap-space-sm">
-<label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Amex · Membership Rewards</label>
-<div class="flex items-start gap-3 bg-surface border border-line p-space-sm">
-<span class="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">loyalty</span>
-<div class="flex flex-col gap-1">
-<span class="font-body-sm text-body-sm text-on-surface">1 point per €1, straight into your pool above.</span>
-<span class="font-label-sm text-label-sm uppercase tracking-widest text-quiet">No plan to pay for — the points column does the counting.</span>
-</div>
-</div>
 </div>
 
 <div class="flex items-center justify-end pt-space-sm border-t border-line">
@@ -300,6 +286,7 @@
 <!-- Points table -->
 <div class="bg-surface border border-line p-space-md flex flex-col gap-space-sm">
 <h3 class="font-headline-sm text-headline-sm text-primary">Your points, month by month</h3>
+<div id="routing-lines" class="flex flex-col gap-1"></div>
 <div class="overflow-x-auto">
 <table class="w-full min-w-[520px] font-figure-sm text-figure-sm" id="points-table">
 <thead class="text-quiet uppercase tracking-wider" style="font-family:Outfit,sans-serif;font-size:10px;letter-spacing:0.16em;">
@@ -404,6 +391,7 @@
 <option value="Auckland (AKL)"></option>
 </datalist>
 
+<script type="application/json" id="card-rates">{"amex_gold":{"fuel":0.5,"groceries":0.2,"dining":0.5,"shopping":0.5,"leisure":0.5,"transport":0.5,"travel":1},"amex_green":{"fuel":0.5,"groceries":0.2,"dining":0.5,"shopping":0.5,"leisure":0.5,"transport":0.5,"travel":1},"amex_business_gold":{"fuel":0.5,"groceries":0.2,"dining":0.5,"shopping":0.5,"leisure":0.5,"transport":0.5,"travel":1},"amex_platinum":{"fuel":1,"groceries":1,"dining":1,"shopping":1,"leisure":1,"transport":1,"travel":1},"amex_business_platinum":{"fuel":1,"groceries":1,"dining":1,"shopping":1,"leisure":1,"transport":1,"travel":1},"amex_centurion":{"fuel":1.5,"groceries":1.5,"dining":1.5,"shopping":1.5,"leisure":1.5,"transport":1.5,"travel":1.5},"revolut_premium":{"fuel":0.25,"groceries":0.25,"dining":0.25,"shopping":0.25,"leisure":0.25,"transport":0.25,"travel":0.25},"revolut_metal":{"fuel":0.5,"groceries":0.5,"dining":0.5,"shopping":0.5,"leisure":0.5,"transport":0.5,"travel":0.5},"revolut_ultra":{"fuel":1,"groceries":1,"dining":1,"shopping":1,"leisure":1,"transport":1,"travel":1}}</script>
 <script>
 (function() {
   "use strict";
@@ -412,41 +400,6 @@
   const fmtEur = (n) => "€" + Math.round(n).toLocaleString();
   const fmtCash = (n, cur) => (cur === "EUR" ? "€" : cur === "USD" ? "$" : cur + " ") + Math.round(n).toLocaleString();
   const fmtPts = (n) => Math.round(n).toLocaleString();
-
-  /* The engine states its reasons in Spanish (the docs' runtime language).
-     Translate the ones the traveller actually sees — never alter the data. */
-  function translate(text) {
-    if (typeof text !== "string") return text;
-    let t = text;
-    const rules = [
-      [/fixture: sin fila de canje verificada[^()]*\(ritual D30 pendiente\)\s*—?\s*el veredicto no se inventa/g,
-        "No verified award price (miles + taxes) is logged yet for this exact route, cabin and program — so we cannot honestly price the points column. Cash prices above are live."],
-      [/(?:fixture: )?sin fila de canje verificada para esta ruta — insuficiente, nunca inventado \(ritual D30 pendiente\)/g,
-        "No verified award price (miles + taxes) logged for this route yet — never invented."],
-      [/duffel: sin ofertas dentro de la ventana — prueba fechas más cercanas o una ventana más corta/g,
-        "No cash offers inside your window — try dates closer to today or a shorter window."],
-      [/¿qué tarjeta va a financiar\? \(D19\)/g, "Which card will finance the booking? Without it there is no value (D19)."],
-      [/¿qué tarjeta va a financiar el canje\? Sin carta seleccionada no hay valor \(D19\)/g,
-        "Which card will finance the booking? Without a selected card there is no value (D19)."],
-      [/no cierra: faltan (\d[\d,.]*) Avios para ([A-Za-z]+), incluyendo transferencia desde ([^,]+) \(sin verificar — confírmalo\)/g,
-        "Not enough points yet: $2 needs another $1, counting a transfer from $3 (unverified — confirm it)."],
-      [/no cierra: faltan (\d[\d,.]*) Avios para ([A-Za-z]+), incluyendo transferencia desde ([^,]+)/g,
-        "Not enough points yet: $2 needs another $1, counting a transfer from $3."],
-      [/no cierra: faltan (\d[\d,.]*) Avios para ([A-Za-z]+)(?: \(saldo hoy \+ ganancia por gasto\))?/g,
-        "Not enough points yet: $2 needs another $1 (today's balance + what your spending earns monthly)."],
-      [/vetado: sin asiento — solo responde el precio en efectivo \(D21\)/g,
-        "Vetoed: no award seat — only the cash price answers (D21)."],
-      [/faltan (\d[\d,.]*) puntos y no hay ganancia mensual introducida — primero el gasto \(F3\), luego un mejor plan o multiplicador para acelerar \(F5\); nunca comprar puntos por si acaso/g,
-        "You are short $1 points and no monthly earn is set yet — first state your spending (F3), then a better plan or multiplier can speed it up (F5); never buy points just in case."],
-      [/faltan (\d[\d,.]*) puntos al arranque; con (\S+) el suelo llega en ~(\d+) meses y el techo a ~(\d+) meses — un mejor plan o un multiplicador aceleran \(F5\)\. Nunca comprar puntos por si acaso/g,
-        "You are short $1 points at the start; with $2 the floor arrives in ~$4 months and the ceiling in ~$3 — a better plan or a multiplier speeds it up (F5). Never buy points just in case."],
-      [/Valoración de puntos gracias a la base de datos pública «points-transfer-valuations» \(WanderWise Guide\), licencia CC-BY-4\.0 · enlace al dataset en el pie de página/g,
-        "Point valuations from the public «points-transfer-valuations» database (WanderWise Guide), CC-BY-4.0 · dataset link in the footer."],
-    ];
-    for (const [re, en] of rules) t = t.replace(re, en);
-    return t;
-  }
-
 
   /* stepper controls for money & points: tap or press-and-hold − / + to count
    up and down; hairline dividers mark the click zones; direct typing in the
@@ -510,6 +463,7 @@ const state = {
     lead: 60,
     cardCode: null,
     hasPlan: false, // flips on once the engine renders a plan; gates tab 3
+    spendBonuses: [],
   };
 
   /* ---------- Step navigation ---------- */
@@ -570,21 +524,32 @@ const state = {
     });
   });
 
+  const CARD_LABEL = {
+    amex_gold: "Amex Gold", amex_green: "Amex Green", amex_business_gold: "Amex Business Gold",
+    amex_platinum: "Amex Platinum", amex_business_platinum: "Amex Business Platinum", amex_centurion: "Amex Centurion",
+    revolut_premium: "Revolut Premium", revolut_metal: "Revolut Metal", revolut_ultra: "Revolut Ultra",
+  };
+  function cardRates() {
+    try {
+      const parsed = JSON.parse($("card-rates").textContent || "");
+      if (!parsed || typeof parsed !== "object") throw new Error("card rate table was empty");
+      return parsed;
+    } catch (error) {
+      console.error("card rate table unreadable", error);
+      return null;
+    }
+  }
   function renderCardFields() {
     const box = $("card-fields");
     box.innerHTML = "";
-    const REVOLUT_RATE = { premium: "0.25", metal: "0.5", ultra: "1–1.5" };
     Object.keys(state.cards).forEach(name => {
-      const earnTxt = name === "Revolut"
-        ? REVOLUT_RATE[state.plan || "metal"] + " RevPoints per €1 on your " + (state.plan || "metal") + " plan (Premium 0.25 · Metal 0.5 · Ultra 1–1.5)"
-        : "1 point per €1 · Membership Rewards";
       const row = document.createElement("div");
       row.className = "flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-surface border border-line p-space-sm";
-      row.innerHTML = '<div class="flex flex-col"><span class="font-label-sm text-label-sm uppercase tracking-widest text-primary">' + esc(name) + '</span>' +
-        '<span class="font-figure-sm text-figure-sm text-quiet">' + earnTxt + ' — points you already have below:</span></div>';
+      row.innerHTML = '<div class="flex flex-col"><span class="font-label-sm text-label-sm uppercase tracking-widest text-primary">' + esc(CARD_LABEL[name] || name) + '</span>' +
+        '<span class="font-figure-sm text-figure-sm text-quiet">Points already on this card</span></div>';
       row.appendChild(makeStepper({
         step: 1000,
-        aria: "Points on " + name,
+        aria: "Points on " + (CARD_LABEL[name] || name),
         boxCls: "w-[210px]",
         valCls: "h-[48px] font-figure-lg text-figure-lg text-primary bg-transparent focus:outline-none focus:bg-primary/5",
         value: state.cards[name].points || undefined,
@@ -593,12 +558,25 @@ const state = {
       }));
       box.appendChild(row);
     });
-    $("revolut-plan-box").classList.toggle("hidden", state.cards["Revolut"] === undefined);
-    $("revolut-plan-box").classList.toggle("flex", state.cards["Revolut"] !== undefined);
-    $("amex-box").classList.toggle("hidden", state.cards["Amex"] === undefined);
-    $("amex-box").classList.toggle("flex", state.cards["Amex"] !== undefined);
   }
-
+  function shoppingRate() {
+    const rates = cardRates();
+    if (!rates) return 0;
+    let best = 0;
+    Object.keys(state.cards).forEach(card => {
+      const rate = rates[card] && rates[card].shopping || 0;
+      if (rate > best) best = rate;
+    });
+    return best;
+  }
+  function collectSpend() {
+    const spend = {};
+    document.querySelectorAll(".spend-cat").forEach(inp => {
+      const amount = parseFloat(inp.value) || 0;
+      if (amount > 0) spend[inp.getAttribute("data-cat")] = amount;
+    });
+    return spend;
+  }
   document.querySelectorAll(".bank-chip").forEach(chip => {
     chip.addEventListener("click", () => {
       const b = chip.getAttribute("data-bank");
@@ -619,7 +597,6 @@ const state = {
   });
 
   /* ---------- Spending ---------- */
-  const CAT_LABEL = { fuel: "Fuel", groceries: "Groceries", dining: "Dining & dinner", shopping: "Shopping", leisure: "Leisure", transport: "Transport", travel: "Travel" };
   $("spend-total-input").addEventListener("input", () => { state.spendTotal = parseFloat($("spend-total-input").value) || 0; updateBreakdown(); });
   document.querySelectorAll(".spend-cat").forEach(inp => inp.addEventListener("input", updateBreakdown));
   function updateBreakdown() {
@@ -703,9 +680,13 @@ const state = {
   $("calculate-btn").addEventListener("click", runCalculation);
   $("calc-retry").addEventListener("click", runCalculation);
   function updateCardCode() {
+    const ids = Object.keys(state.cards);
     state.cardCode = null;
-    if (state.cards["Amex"]) state.cardCode = "AMEX_ES";
-    else if (state.cards["Revolut"]) state.cardCode = "REVOLUT";
+    if (ids.some(id => state.cards[id].code === "AMEX_ES")) state.cardCode = "AMEX_ES";
+    else if (ids.some(id => state.cards[id].code === "REVOLUT")) state.cardCode = "REVOLUT";
+    if (ids.includes("revolut_ultra")) state.plan = "ultra";
+    else if (ids.includes("revolut_metal")) state.plan = "metal";
+    else if (ids.includes("revolut_premium")) state.plan = "premium";
   }
   const LOADING_STEPS = [
     "Checking cash prices with Duffel…",
@@ -753,7 +734,7 @@ const state = {
     if (!state.cardCode) {
       showError(
         "Pick a first program",
-        "Nothing is missing from your trip — the engine just cannot value points without knowing which program they come from. Select Amex or Revolut among the cards in step 1 (Your information), then press Calculate again in step 2.",
+        "Select at least one card in step 1. Only the cards you turn on are used, and each purchase goes to the one that earns the most points.",
         false,
         { label: "Add a card in step 1", step: 1 }
       );
@@ -772,7 +753,11 @@ const state = {
       cabin: state.cabin,
       pax: state.pax,
       card: state.cardCode,
-      plan: state.cards["Revolut"] ? state.plan : null,
+      plan: Object.keys(state.cards).some(id => String(id).startsWith("revolut_")) ? state.plan : null,
+      cards: Object.keys(state.cards),
+      spend: collectSpend(),
+      pointsHeld: totalEnteredPoints(),
+      monthlyTotal: parseFloat($("spend-total-input").value) || 0,
     };
     let planJson = null;
     try {
@@ -801,41 +786,40 @@ const state = {
   }
 
   /* ---------- Render the plan ---------- */
-  const VERDICT_LABEL = { usar_puntos: "Use points", pagar_en_efectivo: "Pay cash", insufficient_data: "Not enough data yet" };
+  const VERDICT_LABEL = { usar_puntos: "Use points", pagar_en_efectivo: "Pay cash", insufficient_data: "Pay cash" };
 
   function renderPlan(plan) {
     state.hasPlan = true;
-    const rec = plan.recommended;
-    const alts = (plan.candidates || []).slice().sort((a, b) => (b.value_score ?? -Infinity) - (a.value_score ?? -Infinity));
+    const alts = (plan.candidates || []).slice().sort((a, b) => {
+      const av = a.value_score, bv = b.value_score;
+      if (av != null || bv != null) return (bv ?? -Infinity) - (av ?? -Infinity);
+      return (a.cash && a.cash.amount || Infinity) - (b.cash && b.cash.amount || Infinity);
+    });
+    const rec = plan.recommended || alts.find((c) => c.cash) || null;
     const cashPrice = rec && rec.cash ? rec.cash.amount : null;
     const cashCur = rec && rec.cash ? (rec.cash.currency || "EUR") : "EUR";
+    const cashIsProjected = !!(rec && rec.cash && rec.cash.projected);
+    const cashLabel = cashPrice == null ? null : (cashIsProjected ? "≈ " : "") + fmtCash(cashPrice, cashCur);
 
-    // ----- verdict card -----
     let title, sub;
-    if (plan.insufficient_reason || !rec) {
-      title = "Not enough data yet";
-      sub = translate(plan.insufficient_reason || rec && rec.why || plan.accelerator && plan.accelerator.note || "We could not price a verdict for this route yet.");
-    } else if (rec.verdict === "usar_puntos") {
-      const sav = rec.savings_eur ?? 0;
+    if (rec && rec.verdict === "usar_puntos" && cashLabel && rec.savings_eur) {
+      const sav = rec.savings_eur;
       const pct = cashPrice ? Math.round((sav / cashPrice) * 100) : 0;
-      title = "Use points — " + fmtCash(sav, cashCur) + " off (" + pct + "%)";
-      sub = "This trip would cost " + fmtCash(cashPrice, cashCur) + " in cash. With points you only pay the taxes and fees.";
-    } else if (rec.verdict === "pagar_en_efectivo") {
-      title = "Pay cash for this trip";
-      sub = "Points do not add up in time for these dates — cash fares are the better answer here.";
+      title = "Use points — " + (cashIsProjected ? "≈ " : "") + fmtCash(sav, cashCur) + " off (" + pct + "%)";
+      sub = "You pay the taxes and fees.";
+    } else if (cashLabel) {
+      title = "Pay cash — " + cashLabel;
+      sub = "Your points do not cover this trip by the travel date.";
     } else {
-      title = "Not enough data yet";
-      sub = rec.why || "This route needs one more data pass.";
+      title = "Pay cash";
+      sub = "";
     }
     $("verdict-title").textContent = title;
     $("verdict-sub").textContent = sub;
-    const whyBits = [];
-    if (rec && rec.why) whyBits.push(translate(rec.why));
-    if (plan.uses_program) whyBits.push("Award priced in " + plan.uses_program + " (verified fixture row).");
-    if (!plan.card_gate.card) whyBits.push("Select a card program to score full value.");
-    $("verdict-why").textContent = translate(whyBits.join(" — ")) || "";
-    $("results-attribution").textContent = translate(plan.attribution || "Prices via Duffel (test mode) · award fixture labelled");
-    $("verdict-badge").textContent = (plan.badges || []).map(b => ({ "estimación": "estimate", "proyección": "projection" }[b] || b)).join(" · ");
+    $("verdict-why").textContent = "";
+    $("verdict-why").classList.add("hidden");
+    $("results-attribution").textContent = "";
+    $("verdict-badge").textContent = "";
 
     // ----- timeline strip -----
     const today = new Date().toISOString().slice(0, 10);
@@ -851,26 +835,23 @@ const state = {
     }
 
     // ----- points table (user inputs + guide rates) -----
+    state.monthlyPoints = typeof plan.monthly_points === "number" ? plan.monthly_points : null;
+    state.spendBonuses = plan.spend_bonuses || [];
     const needed = neededFromPlan(plan, cashPrice);
     renderPointsTable(needed);
 
     // ----- price check table -----
-    renderPriceTable(alts, cashCur);
-    if (plan.insufficient_reason || (plan.candidates || []).some(c => c.verdict === "insufficient_data")) {
-      $("price-table-note").textContent = "Cash prices are live from Duffel. The With-points column stays open until one verified award quote (miles + taxes, e.g. seats.aero free tier or the airline's award calendar) is logged for this exact route and cabin — we never invent one.";
-    }
-
-    // ----- accelerator note -----
-    if (plan.accelerator && plan.accelerator.note) {
-      $("verdict-why").textContent += " — " + translate(plan.accelerator.note);
-    }
+    renderPriceTable(alts, rec && rec.depart_date);
+    $("price-table-note").textContent = "";
+    renderRoutingResult(plan);
 
     showResults();
   }
 
   /* needed total award points for the trip: derived from the engine gap, never invented */
   function neededFromPlan(plan) {
-    const rec = plan.recommended;
+    const rec = plan.recommended || (plan.candidates || [])[0];
+    if (rec && typeof rec.miles_needed === "number") return rec.miles_needed;
     if (rec && rec.gap) {
       const projected = rec.proyeccion ? (rec.proyeccion.low + rec.proyeccion.high) / 2 + (rec.gap.gap || 0) : null;
       if (projected) return Math.round(projected);
@@ -882,17 +863,29 @@ const state = {
     return Object.keys(state.cards).reduce((s, k) => s + (state.cards[k].points || 0), 0);
   }
 
-  function monthlyRate() {
-    // pts per euro, low–high — Revolut F4 official rates; Amex labelled band
-    if (state.cards["Revolut"]) {
-      const r = { premium: [0.25, 0.25], metal: [0.5, 0.5], ultra: [1.0, 1.5] }[state.plan] || [0.5, 0.5];
-      return r;
-    }
-    return [1.0, 1.5];
-  }
   function monthlyEarn() {
-    const [lo, hi] = monthlyRate();
-    return [state.spendTotal * lo, state.spendTotal * hi];
+    const points = state.monthlyPoints;
+    if (typeof points === "number") return [points, points];
+    return [0, 0];
+  }
+  function renderRoutingResult(plan) {
+    const host = $("routing-lines");
+    if (!host) return;
+    host.innerHTML = "";
+    if (plan.spend_bonuses) {
+      plan.spend_bonuses.forEach(bonus => {
+        const line = document.createElement("p");
+        line.className = "font-body-sm text-body-sm text-on-surface";
+        line.textContent = (CARD_LABEL[bonus.card] || bonus.card) + " spend this month is " + fmtEur(bonus.spendEuros) + ". At least " + fmtEur(bonus.thresholdEuros) + " on that card adds " + fmtPts(bonus.points) + " points, for " + bonus.months + " months.";
+        host.appendChild(line);
+      });
+    }
+    if (plan.amex_travel_per_euro === 2) {
+      const line = document.createElement("p");
+      line.className = "font-body-sm text-body-sm text-on-surface-variant";
+      line.textContent = "Booking on Amex Travel Spain earns 2 points per € on any Amex card you selected.";
+      host.appendChild(line);
+    }
   }
   const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -908,15 +901,17 @@ const state = {
       months = Math.max(1, Math.round((travel - new Date()) / (30 * 24 * 3600000)));
     }
     const d = new Date();
-    const addLo = earnLo, addHi = earnHi;
     let lo = totalEnteredPoints(), hi = lo;
     const rows = [];
     for (let i = 1; i <= months; i++) {
       const m = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + i, 1));
-      lo += addLo; hi += addHi;
+      const bonus = (state.spendBonuses || []).reduce((sum, item) => sum + (i <= item.months ? item.points : 0), 0);
+      const addLoMonth = earnLo + bonus;
+      const addHiMonth = earnHi + bonus;
+      lo += addLoMonth; hi += addHiMonth;
       rows.push({
         label: MON[m.getUTCMonth()] + " " + String(m.getUTCFullYear()),
-        addLabel: "+" + fmtPts(addLo) + (addHi !== addLo ? "–" + fmtPts(addHi) : ""),
+        addLabel: "+" + fmtPts(addLoMonth) + (addHiMonth !== addLoMonth ? "–" + fmtPts(addHiMonth) : ""),
         balLabel: fmtPts(Math.min(lo, hi)) + (lo !== hi ? "–" + fmtPts(hi) : ""),
       });
     }
@@ -930,7 +925,7 @@ const state = {
     // purchases read from the DOM rows
     let purchaseEur = 0;
     document.querySelectorAll("#purchase-rows input[type=number]").forEach(i => { purchaseEur += parseFloat(i.value) || 0; });
-    const purchasePts = Math.round(purchaseEur * monthlyRate()[0]);
+    const purchasePts = Math.round(purchaseEur * shoppingRate());
     const notes = [];
     if (purchaseEur > 0) notes.push("Planned purchases (" + fmtEur(purchaseEur) + ") would add roughly " + fmtPts(purchasePts) + " more points when they happen.");
     const last = rows[rows.length - 1];
@@ -943,28 +938,32 @@ const state = {
     }
   }
 
-  function renderPriceTable(cands, cur) {
+  function renderPriceTable(cands, bestDate) {
     const tbody = $("price-table-body");
     tbody.innerHTML = "";
-    if (!cands.length) {
-      $("price-table-note").textContent = "No cash fares inside your window — try a closer date or a wider lead.";
-      return;
-    }
-    cands.forEach((c, i) => {
+    if (!cands.length) return;
+    cands.forEach((c) => {
       if (!c.cash) return;
-      const on = i === 0;
+      const on = c.depart_date === bestDate;
       const tr = document.createElement("tr");
-      const verdict = VERDICT_LABEL[c.verdict] || c.verdict;
-      const pct = c.cash.amount ? Math.round(((c.savings_eur || 0) / c.cash.amount) * 100) : 0;
       const cur = c.cash.currency || "EUR";
+      const amount = Number(c.cash.amount);
+      const savings = Number(c.savings_eur);
+      const amountOk = Number.isFinite(amount) && amount >= 0;
+      const savingsOk = Number.isFinite(savings) && savings > 0 && amountOk;
+      const approx = c.cash.projected ? "≈ " : "";
+      const price = amountOk ? approx + fmtCash(amount, cur) : "—";
+      const due = savingsOk ? Math.max(0, Math.round(amount) - Math.round(savings)) : null;
+      const withPoints = due === null ? "—" : approx + fmtCash(due, cur);
+      const pct = savingsOk ? Math.round((savings / amount) * 100) : 0;
+      const saved = savingsOk ? "−" + approx + fmtCash(savings, cur) + " (" + pct + "%)" : "—";
       tr.innerHTML =
         '<td class="py-1.5 border-b border-line/60 text-primary' + (on ? " font-medium" : "") + '">' + esc(c.depart_date) + (on ? ' <span class="ml-1 font-label-sm text-label-sm uppercase tracking-wider text-secondary">best</span>' : '') + '</td>' +
-        '<td class="py-1.5 border-b border-line/60 text-right text-primary">' + fmtCash(c.cash.amount, cur) + '</td>' +
-        '<td class="py-1.5 border-b border-line/60 text-right text-on-surface-variant">' + esc(verdict) + '</td>' +
-        '<td class="py-1.5 border-b border-line/60 text-right text-primary font-medium">' + (c.savings_eur ? "−" + fmtCash(c.savings_eur, cur) + " (" + pct + "%)" : "—") + '</td>';
+        '<td class="py-1.5 border-b border-line/60 text-right text-primary">' + esc(price) + '</td>' +
+        '<td class="py-1.5 border-b border-line/60 text-right text-primary font-medium">' + esc(withPoints) + '</td>' +
+        '<td class="py-1.5 border-b border-line/60 text-right text-primary font-medium">' + saved + '</td>';
       tbody.appendChild(tr);
     });
-    $("price-table-note").textContent = "Seven candidate dates checked across your booking window, cheapest total-value first. Prices are per candidate as returned by the check.";
   }
 
   document.querySelectorAll(".money-stepper").forEach((el) => wireStepper(el));
