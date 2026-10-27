@@ -133,9 +133,16 @@ describe("discountEuros", () => {
     );
   });
 
-  it("returns no discount when the points still fall short", () => {
+  it("prices a partial balance as that share of the cash above taxes", () => {
     assert.equal(
       discountEuros({ cashEur: 1200, taxesEur: 200, milesNeeded: 50_000, pointsHeld: 1_000, monthlyPoints: 0, months: 2 }),
+      20,
+    );
+  });
+
+  it("returns no discount when no points are available", () => {
+    assert.equal(
+      discountEuros({ cashEur: 1200, taxesEur: 200, milesNeeded: 50_000, pointsHeld: 0, monthlyPoints: 0, months: 2 }),
       null,
     );
   });
@@ -143,6 +150,13 @@ describe("discountEuros", () => {
   it("rejects extra points that are not a real balance", () => {
     assert.throws(
       () => discountEuros({ cashEur: 1200, taxesEur: 200, milesNeeded: 50_000, pointsHeld: 0, monthlyPoints: 0, months: 1, extraPoints: Number.NaN }),
+      (error: unknown) => error instanceof InsufficientData,
+    );
+  });
+
+  it("rejects a held balance that is not a real number", () => {
+    assert.throws(
+      () => discountEuros({ cashEur: 1200, taxesEur: 200, milesNeeded: 50_000, pointsHeld: Number.NaN, monthlyPoints: 0, months: 1 }),
       (error: unknown) => error instanceof InsufficientData,
     );
   });

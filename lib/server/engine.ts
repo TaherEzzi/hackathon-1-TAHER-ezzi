@@ -34,7 +34,7 @@ import { getOffersCached, repriceOfferCached, cheapestSaneOffer, type DuffelOffe
 import { computeBookNowVerdict } from "./verdict-engine";
 import { memoryCacheStore, type CacheStore } from "./cache";
 import { usdEurCached } from "./fx";
-import { bonusPointsByMonth, discountEuros, routeSpend, type CardProduct, type CardRouting, type SpendCategory } from "./card-earn";
+import { bonusPointsByMonth, discountEuros, pointsAvailable, routeSpend, type CardProduct, type CardRouting, type SpendCategory } from "./card-earn";
 import { fillMissingFares, stampMissingCash, type FareEstimate, type FilledFares } from "./fare-estimate";
 import { awardForRoute, estimateCashEur, parseCabin } from "./award-estimate";
 import { estimateTripPrices } from "./grok";
@@ -862,25 +862,29 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
 
     const milesNeeded = quote.miles * pax;
     const months = monthsUntil(date);
+    const monthlyPoints = routed?.monthlyPoints ?? mEarn?.low ?? 0;
+    const extraPoints = routed ? bonusPointsByMonth(routed.bonuses, months) : 0;
+    const held = input.pointsHeld ?? 0;
+    const pointsAtDate = pointsAvailable({ pointsHeld: held, monthlyPoints, months, extraPoints });
     const discount = discountEuros({
       cashEur: expectedCash,
       taxesEur: quote.taxes.amount,
       milesNeeded,
-      pointsHeld: input.pointsHeld ?? 0,
-      monthlyPoints: routed?.monthlyPoints ?? mEarn?.low ?? 0,
+      pointsHeld: held,
+      monthlyPoints,
       months,
-      extraPoints: routed ? bonusPointsByMonth(routed.bonuses, months) : 0,
+      extraPoints,
     });
+    const fullyCovered = milesNeeded > 0 && pointsAtDate >= milesNeeded;
     if (discount !== null) {
       savings = discount;
       valueScore = discount;
-      verdict = "usar_puntos";
-      why = null;
-    } else {
+      verdict = fullyCovered ? "usar_puntos" : "pagar_en_efectivo";
+      if (fullyCovered) why = null;
+    } else if (!fullyCovered) {
       verdict = "pagar_en_efectivo";
       savings = null;
       valueScore = null;
-      why = null;
     }
 
     candidates.push({

@@ -78,7 +78,7 @@
 <div class="flex items-center gap-2">
 <div class="money-stepper flex items-stretch border border-line h-[56px] w-[220px]" data-step="50">
 <button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="down" aria-label="Decrease monthly spend">−</button>
-<input id="spend-total-input" class="mstep-val h-full flex-1 min-w-0 text-center font-figure-lg text-figure-lg text-primary bg-transparent focus:outline-none focus:bg-primary/5" type="number" inputmode="numeric" min="0" step="50" value="3000" aria-label="Monthly spend total"/>
+<input id="spend-total-input" class="mstep-val h-full flex-1 min-w-0 text-center font-figure-lg text-figure-lg text-primary bg-transparent focus:outline-none focus:bg-primary/5" type="number" inputmode="numeric" min="0" step="50" value="3500" aria-label="Monthly spend total"/>
 <button type="button" class="mstep-btn w-12 shrink-0 flex items-center justify-center font-figure-md text-figure-md text-primary border-x border-line hover:bg-primary hover:text-on-primary transition-colors cursor-pointer" data-dir="up" aria-label="Increase monthly spend">+</button>
 </div>
 <span class="font-label-md text-label-md uppercase tracking-wider text-quiet whitespace-nowrap">€ / month</span>
@@ -148,7 +148,7 @@
 
 <div class="flex items-center justify-between pt-space-sm" id="breakdown-sum-box">
 <span class="font-label-sm text-label-sm uppercase tracking-widest text-quiet">Accounted for</span>
-<span class="font-figure-md text-figure-md text-primary" id="breakdown-sum">€0 of €3,000</span>
+<span class="font-figure-md text-figure-md text-primary" id="breakdown-sum">€0 of €3,500</span>
 </div>
 <div class="border-b-2 border-primary mt-[-1px]"></div>
 </div>
@@ -182,13 +182,14 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
 <div class="flex flex-col gap-space-xs">
 <label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant" for="from-city">From</label>
-<input class="w-full h-[52px] bg-surface border border-line px-space-md text-primary font-body-sm focus:outline-none focus:border-primary city-input" list="cities-datalist" id="from-city" type="text" placeholder="City — e.g. Madrid (MAD)"/>
+<input class="w-full h-[52px] bg-surface border border-line px-space-md text-primary font-body-sm focus:outline-none focus:border-primary city-input" list="cities-datalist" id="from-city" type="text" placeholder="Madrid (MAD)"/>
 </div>
 <div class="flex flex-col gap-space-xs">
 <label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant" for="to-city">To</label>
-<input class="w-full h-[52px] bg-surface border border-line px-space-md text-primary font-body-sm focus:outline-none focus:border-primary city-input" list="cities-datalist" id="to-city" type="text" placeholder="City — e.g. Johannesburg (JNB)"/>
+<input class="w-full h-[52px] bg-surface border border-line px-space-md text-primary font-body-sm focus:outline-none focus:border-primary city-input" list="cities-datalist" id="to-city" type="text" placeholder="Johannesburg (JNB)"/>
 </div>
 </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Suggested trip from the brief: Madrid (MAD) to Johannesburg (JNB), business, dates within 3 days. Nearby options are Barcelona, Lisbon, and London.</p>
 
 <!-- Travellers + cabin -->
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
@@ -340,55 +341,9 @@
 <option value="Barcelona (BCN)"></option>
 <option value="Lisbon (LIS)"></option>
 <option value="London (LHR)"></option>
-<option value="Paris (CDG)"></option>
-<option value="Amsterdam (AMS)"></option>
-<option value="Frankfurt (FRA)"></option>
-<option value="Zurich (ZRH)"></option>
-<option value="Rome (FCO)"></option>
-<option value="Milan (MXP)"></option>
-<option value="Dublin (DUB)"></option>
-<option value="Vienna (VIE)"></option>
-<option value="Copenhagen (CPH)"></option>
-<option value="Stockholm (ARN)"></option>
-<option value="Helsinki (HEL)"></option>
-<option value="Warsaw (WAW)"></option>
-<option value="Athens (ATH)"></option>
-<option value="Istanbul (IST)"></option>
-<option value="Moscow (SVO)"></option>
-<option value="Cairo (CAI)"></option>
-<option value="Casablanca (CMN)"></option>
-<option value="Tel Aviv (TLV)"></option>
-<option value="Dubai (DXB)"></option>
-<option value="Doha (DOH)"></option>
-<option value="New York (JFK)"></option>
-<option value="Boston (BOS)"></option>
-<option value="Chicago (ORD)"></option>
-<option value="Washington (IAD)"></option>
-<option value="Miami (MIA)"></option>
-<option value="Los Angeles (LAX)"></option>
-<option value="San Francisco (SFO)"></option>
-<option value="Toronto (YYZ)"></option>
-<option value="Mexico City (MEX)"></option>
-<option value="Bogotá (BOG)"></option>
-<option value="Lima (LIM)"></option>
-<option value="Buenos Aires (EZE)"></option>
-<option value="Santiago (SCL)"></option>
-<option value="São Paulo (GRU)"></option>
-<option value="Rio de Janeiro (GIG)"></option>
 <option value="Johannesburg (JNB)"></option>
-<option value="Cape Town (CPT)"></option>
-<option value="Bangkok (BKK)"></option>
-<option value="Singapore (SIN)"></option>
-<option value="Kuala Lumpur (KUL)"></option>
-<option value="Hong Kong (HKG)"></option>
-<option value="Tokyo (HND)"></option>
-<option value="Seoul (ICN)"></option>
-<option value="Beijing (PEK)"></option>
-<option value="Shanghai (PVG)"></option>
-<option value="Delhi (DEL)"></option>
-<option value="Sydney (SYD)"></option>
-<option value="Melbourne (MEL)"></option>
-<option value="Auckland (AKL)"></option>
+<option value="Doha (DOH)"></option>
+<option value="Lima (LIM)"></option>
 </datalist>
 
 <script type="application/json" id="card-rates">{"amex_gold":{"fuel":0.5,"groceries":0.2,"dining":0.5,"shopping":0.5,"leisure":0.5,"transport":0.5,"travel":1},"amex_green":{"fuel":0.5,"groceries":0.2,"dining":0.5,"shopping":0.5,"leisure":0.5,"transport":0.5,"travel":1},"amex_business_gold":{"fuel":0.5,"groceries":0.2,"dining":0.5,"shopping":0.5,"leisure":0.5,"transport":0.5,"travel":1},"amex_platinum":{"fuel":1,"groceries":1,"dining":1,"shopping":1,"leisure":1,"transport":1,"travel":1},"amex_business_platinum":{"fuel":1,"groceries":1,"dining":1,"shopping":1,"leisure":1,"transport":1,"travel":1},"amex_centurion":{"fuel":1.5,"groceries":1.5,"dining":1.5,"shopping":1.5,"leisure":1.5,"transport":1.5,"travel":1.5},"revolut_premium":{"fuel":0.25,"groceries":0.25,"dining":0.25,"shopping":0.25,"leisure":0.25,"transport":0.25,"travel":0.25},"revolut_metal":{"fuel":0.5,"groceries":0.5,"dining":0.5,"shopping":0.5,"leisure":0.5,"transport":0.5,"travel":0.5},"revolut_ultra":{"fuel":1,"groceries":1,"dining":1,"shopping":1,"leisure":1,"transport":1,"travel":1}}</script>
@@ -454,7 +409,7 @@ const state = {
     step: 1,
     cards: {},                  // name -> {code, earn, points}
     banks: new Set(),
-    spendTotal: 3000,
+    spendTotal: 3500,
     purchases: [],              // {name, amount}
     plan: "metal",
     pax: 1,
@@ -597,15 +552,31 @@ const state = {
   });
 
   /* ---------- Spending ---------- */
-  $("spend-total-input").addEventListener("input", () => { state.spendTotal = parseFloat($("spend-total-input").value) || 0; updateBreakdown(); });
-  document.querySelectorAll(".spend-cat").forEach(inp => inp.addEventListener("input", updateBreakdown));
-  function updateBreakdown() {
+  let spendSource = "total";
+  $("spend-total-input").addEventListener("input", () => {
+    spendSource = "total";
+    state.spendTotal = parseFloat($("spend-total-input").value) || 0;
+    updateBreakdown();
+  });
+  document.querySelectorAll(".spend-cat").forEach(inp => inp.addEventListener("input", () => {
+    spendSource = "categories";
+    updateBreakdown();
+  }));
+  function categorySum() {
     let sum = 0;
     document.querySelectorAll(".spend-cat").forEach(inp => { sum += parseFloat(inp.value) || 0; });
+    return sum;
+  }
+  function updateBreakdown() {
+    const sum = categorySum();
+    if (spendSource === "categories" && sum > 0) {
+      state.spendTotal = sum;
+      $("spend-total-input").value = String(sum);
+    }
     const total = state.spendTotal;
-    $("breakdown-sum").textContent = sum > total
-      ? fmtEur(sum) + " — over your " + fmtEur(total)
-      : fmtEur(sum) + " of " + fmtEur(total) + " set out";
+    $("breakdown-sum").textContent = sum > 0
+      ? fmtEur(sum) + " this month"
+      : fmtEur(0) + " of " + fmtEur(total);
   }
 
   /* ---------- Purchases ---------- */
@@ -744,12 +715,21 @@ const state = {
     showStep(3);
     showLoading();
     const travel = state.travelDate;
-    const start = new Date(travel + "T00:00:00Z");
-    start.setUTCDate(start.getUTCDate() - state.lead);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(travel || ""))) {
+      showError("Pick a travel date", "Choose the day you want to fly, then calculate again.", false, { label: "Back to your trip", step: 2 });
+      return;
+    }
+    const today = new Date().toISOString().slice(0, 10);
+    const shift = (iso, days) => {
+      const d = new Date(iso + "T00:00:00Z");
+      d.setUTCDate(d.getUTCDate() + days);
+      return d.toISOString().slice(0, 10);
+    };
+    const windowStart = shift(travel, -3);
     const body = {
       origin: cityToCode($("from-city").value),
       destination: cityToCode($("to-city").value),
-      window: { start: start.toISOString().slice(0, 10), end: travel },
+      window: { start: windowStart < today ? today : windowStart, end: shift(travel, 3) },
       cabin: state.cabin,
       pax: state.pax,
       card: state.cardCode,
@@ -842,7 +822,7 @@ const state = {
 
     // ----- price check table -----
     renderPriceTable(alts, rec && rec.depart_date);
-    $("price-table-note").textContent = "";
+    $("price-table-note").textContent = "Dates within 3 days of the day you asked for.";
     renderRoutingResult(plan);
 
     showResults();

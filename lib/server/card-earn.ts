@@ -216,6 +216,26 @@ export function routeSpend(
   return { routes, monthlyPoints, amexTravelPerEuro, bonuses: bonusesFor(spendByCard) };
 }
 
+function requireAmount(label: string, value: number): void {
+  if (!Number.isFinite(value) || value < 0) {
+    throw new InsufficientData(`routing: ${label} must be a finite amount ≥ 0`);
+  }
+}
+
+/** Points already held, plus monthly earn and a one-off bonus, at a departure date. */
+export function pointsAvailable(input: {
+  pointsHeld: number;
+  monthlyPoints: number;
+  months: number;
+  extraPoints?: number;
+}): number {
+  requireAmount("points held", input.pointsHeld);
+  requireAmount("monthly points", input.monthlyPoints);
+  requireAmount("months", input.months);
+  if (input.extraPoints !== undefined) requireAmount("extra points", input.extraPoints);
+  return input.pointsHeld + input.monthlyPoints * input.months + (input.extraPoints ?? 0);
+}
+
 export function discountEuros(input: {
   cashEur: number;
   taxesEur: number;
@@ -225,11 +245,12 @@ export function discountEuros(input: {
   months: number;
   extraPoints?: number;
 }): number | null {
-  if (input.extraPoints !== undefined && (!Number.isFinite(input.extraPoints) || input.extraPoints < 0)) {
-    throw new InsufficientData("routing: extra points must be a finite amount ≥ 0");
-  }
-  const pointsAtDate = input.pointsHeld + input.monthlyPoints * input.months + (input.extraPoints ?? 0);
-  if (!(input.milesNeeded > 0) || pointsAtDate < input.milesNeeded) return null;
-  const saved = Math.round((input.cashEur - input.taxesEur) * 100) / 100;
+  requireAmount("cash", input.cashEur);
+  requireAmount("taxes", input.taxesEur);
+  requireAmount("miles needed", input.milesNeeded);
+  const pointsAtDate = pointsAvailable(input);
+  if (!(input.milesNeeded > 0) || !(pointsAtDate > 0)) return null;
+  const fraction = Math.min(1, pointsAtDate / input.milesNeeded);
+  const saved = Math.round((input.cashEur - input.taxesEur) * fraction * 100) / 100;
   return saved > 0 ? saved : null;
 }
