@@ -866,6 +866,12 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
     const extraPoints = routed ? bonusPointsByMonth(routed.bonuses, months) : 0;
     const held = input.pointsHeld ?? 0;
     const pointsAtDate = pointsAvailable({ pointsHeld: held, monthlyPoints, months, extraPoints });
+    // A partial balance is worth the points times the card pair's euro value.
+    // With no pair row, one point is 1.5 cents — never (cash − taxes) ÷ the award miles,
+    // which prices 11,400 points at a few euros on a cheap fare.
+    const eurosPerPoint = pair && pair.low > 0 && pair.high >= pair.low
+      ? Math.round(((pair.low + pair.high) / 2) * 1e5) / 1e5
+      : 0.015;
     const discount = discountEuros({
       cashEur: expectedCash,
       taxesEur: quote.taxes.amount,
@@ -874,6 +880,7 @@ export async function runwayCompute(ctx: EngineContext, input: RunwayInput): Pro
       monthlyPoints,
       months,
       extraPoints,
+      eurosPerPoint,
     });
     const fullyCovered = milesNeeded > 0 && pointsAtDate >= milesNeeded;
     if (discount !== null) {

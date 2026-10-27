@@ -128,21 +128,28 @@ describe("routeSpend", () => {
 describe("discountEuros", () => {
   it("subtracts taxes once held points plus routed earn cover the miles", () => {
     assert.equal(
-      discountEuros({ cashEur: 1200, taxesEur: 200, milesNeeded: 50_000, pointsHeld: 40_000, monthlyPoints: 5_000, months: 3 }),
+      discountEuros({ cashEur: 1200, taxesEur: 200, milesNeeded: 50_000, pointsHeld: 40_000, monthlyPoints: 5_000, months: 3, eurosPerPoint: 0.015 }),
       1000,
     );
   });
 
-  it("prices a partial balance as that share of the cash above taxes", () => {
+  it("prices a partial balance at the point's euro value, not as a slice of the award", () => {
     assert.equal(
-      discountEuros({ cashEur: 1200, taxesEur: 200, milesNeeded: 50_000, pointsHeld: 1_000, monthlyPoints: 0, months: 2 }),
-      20,
+      discountEuros({ cashEur: 1200, taxesEur: 200, milesNeeded: 50_000, pointsHeld: 1_000, monthlyPoints: 0, months: 2, eurosPerPoint: 0.015 }),
+      15,
+    );
+  });
+
+  it("caps the points' euro value at the fare above taxes", () => {
+    assert.equal(
+      discountEuros({ cashEur: 599, taxesEur: 132, milesNeeded: 140_000, pointsHeld: 11_400, monthlyPoints: 0, months: 1, eurosPerPoint: 0.015 }),
+      171,
     );
   });
 
   it("returns no discount when no points are available", () => {
     assert.equal(
-      discountEuros({ cashEur: 1200, taxesEur: 200, milesNeeded: 50_000, pointsHeld: 0, monthlyPoints: 0, months: 2 }),
+      discountEuros({ cashEur: 1200, taxesEur: 200, milesNeeded: 50_000, pointsHeld: 0, monthlyPoints: 0, months: 2, eurosPerPoint: 0.015 }),
       null,
     );
   });

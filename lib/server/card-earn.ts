@@ -244,13 +244,20 @@ export function discountEuros(input: {
   monthlyPoints: number;
   months: number;
   extraPoints?: number;
+  /** Euro value of one point. A partial balance uses this, never (cash − taxes) ÷ miles. */
+  eurosPerPoint: number;
 }): number | null {
   requireAmount("cash", input.cashEur);
   requireAmount("taxes", input.taxesEur);
   requireAmount("miles needed", input.milesNeeded);
+  if (!Number.isFinite(input.eurosPerPoint) || !(input.eurosPerPoint > 0)) {
+    throw new InsufficientData("routing: euros per point must be a finite amount > 0");
+  }
   const pointsAtDate = pointsAvailable(input);
   if (!(input.milesNeeded > 0) || !(pointsAtDate > 0)) return null;
-  const fraction = Math.min(1, pointsAtDate / input.milesNeeded);
-  const saved = Math.round((input.cashEur - input.taxesEur) * fraction * 100) / 100;
+  const room = Math.round((input.cashEur - input.taxesEur) * 100) / 100;
+  if (!(room > 0)) return null;
+  if (pointsAtDate >= input.milesNeeded) return room;
+  const saved = Math.min(room, Math.round(pointsAtDate * input.eurosPerPoint * 100) / 100);
   return saved > 0 ? saved : null;
 }
